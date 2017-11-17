@@ -1,0 +1,14 @@
+[
+  {
+    "name": "dropDMG",
+    "description": "DropDMG is an application that creates DMG files for macOS. It uses the dropdmg command line utility to combine your packaged macOS application into a DMG for distribution. You can optionally specify a layout and license file that you have created in DropDMG.",
+    "homepage": "https://github.com/trevordevore/levurehelper-dropDMG",
+    "package": "https://github.com/trevordevore/levurehelper-dropDMG/archive/master.zip"
+  },
+  {
+    "name": "Inno Setup",
+    "description": "Inno Setup is a free installer system for Windows available at http://www.jrsoftware.org/isinfo.php. This helper fills in a template .iss file with the files and folders in your application each time you package your application. The resulting file is placed in the package folder alongside the windows folder.",
+    "homepage": "https://github.com/trevordevore/levurehelper-inno_setup",
+    "package": "https://github.com/trevordevore/levurehelper-inno_setup/archive/master.zip"
+  }
+]
