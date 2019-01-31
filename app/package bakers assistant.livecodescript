@@ -1,4 +1,5 @@
 script "Package Bakers Assistant"
+local sRemappedBehaviorNamesA
 
 command PackageBakersAssistant pBuildProfile
   local tError, tMainStack, tStacksA, tStackA
@@ -11,6 +12,8 @@ command PackageBakersAssistant pBuildProfile
   # Bring all behaviors into the stack
   put levureGetUIStacks("templates") into tStacksA
   put the long id of stack tMainStack into tStacksA[the number of elements of tStacksA+1]["filename"]
+
+  createBehaviorNameRemappingTable
 
   repeat for each element tStackA in tStacksA
     mergeInBehaviorsOfStack tStackA["filename"], tMainStack
@@ -40,6 +43,21 @@ command PackageBakersAssistant pBuildProfile
 end PackageBakersAssistant
 
 
+/**
+Summary: One cannot simply deploy an IDE plugin with stack names that could be used by the app developer.
+
+Returns: nothing
+*/
+private command createBehaviorNameRemappingTable
+  put "Bakers Assistant DataView Behavior" into sRemappedBehaviorNamesA["DataView Behavior"]
+  put "Bakers Assistant DataView Tree Behavior" into sRemappedBehaviorNamesA["DataView Tree Behavior"]
+  put "Bakers Assistant DataView Array Controller Behavior" into sRemappedBehaviorNamesA["DataView Array Controller Behavior"]
+  put "Bakers Assistant DataView Scrollbar Behavior" into sRemappedBehaviorNamesA["DataView Scrollbar Behavior"]
+  put "Bakers Assistant DataView Drop Indicator Behavior" into sRemappedBehaviorNamesA["DataView Drop Indicator Behavior"]
+  put "Bakers Assistant DataView Track Drag and Drop Behavior" into sRemappedBehaviorNamesA["DataView Track Drag and Drop Behavior"]
+end createBehaviorNameRemappingTable
+
+
 private command mergeInBehaviorsOfStack pStack, pMainStack
   local tCardId
 
@@ -62,9 +80,18 @@ private command mergeInBehaviorsOfControl pControl, pMainStack
 
   put the behavior of pControl into tBehaviorControl
   if tBehaviorControl is not empty then
+    if behaviorNameShouldBeRemapped(tBehaviorControl) and there is not a tBehaviorControl then
+      put the name of stack remappedBehaviorName(tBehaviorControl) into tBehaviorControl
+    end if
+
     mergeInBehaviorsOfControl tBehaviorControl, pMainStack
 
     if word 1 of pControl is "stack" and the scriptOnly of pControl then
+      if behaviorNameShouldBeRemapped(tBehaviorControl) then
+        put remapBehaviorControl(tBehaviorControl) into tBehaviorControl
+        set the behavior of pControl to tBehaviorControl
+      end if
+
       set the mainstack of tBehaviorControl to pMainStack
     else
       set the script of pControl to the script of tBehaviorControl
@@ -74,6 +101,46 @@ private command mergeInBehaviorsOfControl pControl, pMainStack
 
   return empty
 end mergeInBehaviorsOfControl
+
+
+private function remapBehaviorControl pBehaviorControl
+  local tRemappedName
+
+  put remappedBehaviorName(pBehaviorControl) into tRemappedName
+  clone pBehaviorControl
+  set the name of it to tRemappedName
+  put the name of stack tRemappedName into pBehaviorControl
+
+  return pBehaviorControl
+end remapBehaviorControl
+
+
+private function stackNameFromRef pControl
+  local tStackName
+
+  if word 1 of pControl is "stack" then
+    get matchText(pControl, "stack " & quote & "(.+)" & quote, tStackName)
+  end if
+
+  return tStackName
+end stackNameFromRef
+
+
+private function remappedBehaviorName pBehaviorControl
+  return sRemappedBehaviorNamesA[stackNameFromRef(pBehaviorControl)]
+end remappedBehaviorName
+
+
+private function behaviorNameShouldBeRemapped pBehaviorControl
+  local tControlName
+
+  put stackNameFromRef(pBehaviorControl) into tControlName
+  if tControlName is not empty then
+    return tControlName is among the keys of sRemappedBehaviorNamesA
+  else
+    return false
+  end if
+end behaviorNameShouldBeRemapped
 
 
 private function packagerFilename
