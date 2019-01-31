@@ -1,1 +1,0 @@
-﻿script "com.bakersast.card"
