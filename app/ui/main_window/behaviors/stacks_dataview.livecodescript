@@ -1,8 +1,40 @@
-﻿script "com.bakersast.dataview.stacks" with behavior "DataView Array Controller Behavior"
+﻿script "com.bakersast.dataview.stacks" with behavior "DataView Tree Behavior"
 
 on selectedRowChanged pRow, pPreviousRow
-  uiPreviewUIStack
+  if the dvRowType[pRow] of me is "stack" then
+    uiPreviewUIStack
+  end if
 end selectedRowChanged
+
+
+command ToggleRow pRow
+  if the dvRowIsExpanded[pRow] of me then
+    set the dvRowChildren[pRow] of me to empty
+    SetRowIsExpanded pRow, empty, false
+  else
+    local tNodesA
+
+    put createNodesForControlChildren(the dvRowId[pRow] of me) into tNodesA
+    set the dvRowChildren[pRow] of me to tNodesA
+    SetRowIsExpanded pRow, empty, true
+  end if
+end ToggleRow
+
+
+/**
+Summary: Request from DataView Tree for node data to display.
+
+Returns: nothing
+*/
+command DataForNode pNodeA, pRow, @rDataA, @rTemplate
+  put pNodeA into rDataA
+
+  if pNodeA["type"] is among the items of "stack,card,group" then
+    put "expandable" into rTemplate
+  else
+    put "leaf" into rTemplate
+  end if
+end DataForNode
 
 
 on mouseDoubleUp pBtnNum
@@ -22,7 +54,10 @@ on mouseUp pBtnNum
         break
       case "Reveal"
         set the itemDelimiter to "/"
-        launch document item 1 to -2 of the uSelectedStackFilename of me
+        launch document item 1 to -2 of the effective filename of (the uSelectedStackFilename of me)
+        break
+      case "Toggle"
+        ToggleRow the dvRow of the dvRowControl of the target
         break
     end switch
   end if
@@ -35,5 +70,5 @@ end uSelectedStackName
 
 
 getProp uSelectedStackFilename
-  return GetValueForKeyInRow(the dvHilitedRow of me, "filename")
+  return GetValueForKeyInRow(the dvHilitedRow of me, "id")
 end uSelectedStackFilename
