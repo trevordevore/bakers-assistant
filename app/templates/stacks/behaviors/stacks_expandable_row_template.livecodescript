@@ -62,7 +62,7 @@ on LayoutControl pControlRect
 
   put the rect of field "Label" of me into tRect
   put the right of widget "Toggle" of me into item 1 of tRect
-  put the left of widget "OpenStack" of me - 8 into item 3 of tRect
+  put the left of widget "Reveal" of me - 8 into item 3 of tRect
   set the rect of field "Label" of me to tRect
 
   set the rect of graphic "Background" of me to pControlRect
