@@ -1,0 +1,70 @@
+name: Bakers Assistant
+version: 0.0.1
+build: 1
+encrypt stacks: false
+multiple instances: false
+relaunch in background: false
+creator code:
+application data folder:
+  user:
+    default:
+    macos:
+    windows:
+    linux:
+    ios:
+    android:
+  shared:
+    default:
+    macos:
+    windows:
+    linux:
+preferences filename:
+  user:
+    default:
+    macos:
+    windows:
+    linux:
+    ios:
+    android:
+  shared:
+    default:
+    macos:
+    windows:
+    linux:
+ui:
+  - folder: ./ui
+templates:
+  - folder: ./templates
+libraries:
+  - folder: ./libraries
+  - filename: /Users/trevordevore/Development/screensteps-4/app/libraries/animationEngine.livecode
+  - filename: /Users/trevordevore/Development/screensteps-4/app/libraries/dataHelpers.livecodescript
+  - filename: /Users/trevordevore/Development/screensteps-4/app/libraries/system.livecodescript
+frontscripts:
+  - folder: ./frontscripts
+backscripts:
+  - folder: ./backscripts
+helpers:
+  - folder: ./helpers
+  - filename: ../../levure helpers/dataview
+  - filename: ../../levure helpers/dataview_tree
+  - filename: "[[FRAMEWORK]]/helpers/preferences"
+behaviors:
+  - folder: ./behaviors
+build folder: ../builds
+build profiles:
+  all profiles:
+    packager callbacks stackfile:
+    certificates:
+      macos:
+        name:
+    copy files:
+      all platforms:
+        - filename: assets
+      macos:
+      windows:
+      linux:
+      ios:
+      android:
+  release:
+  beta:
