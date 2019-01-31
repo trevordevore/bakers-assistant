@@ -1,6 +1,5 @@
 ﻿script "com.bakersast.stack"
 
-
 on saveStackRequest
   repeat for each line tCard in the cardNames of me
     go card tCard
@@ -14,6 +13,18 @@ on saveStackRequest
 
   pass saveStackRequest
 end saveStackRequest
+
+
+on preOpenStack
+  try
+    local tStacksA
+    put levureGetUIStacks() into tStacksA
+  catch tError
+    answer "The Levure framework is not currently loaded. Please load a Levure application and then open the plugin again."
+    close this stack
+    exit to top
+  end try
+end preOpenStack
 
 
 command ResizeGlobalControls
