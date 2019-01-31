@@ -1,9 +1,11 @@
 ﻿script "com.bakersast.stack"
 
 on saveStackRequest
-  repeat for each line tCard in the cardNames of me
-    go card tCard
-    dispatch "_resetUI" to card tCard
+  local tCardId
+
+  repeat for each line tCardId in the cardIds of me
+    go card id tCardId
+    dispatch "_resetUI" to card id tCardId
   end repeat
 
   lock messages
