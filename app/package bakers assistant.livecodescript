@@ -7,7 +7,7 @@ command PackageBakersAssistant pBuildProfile
 
   if pBuildProfile is empty then put "release" into pBuildProfile
 
-  put "Bakers Assistant" into tMainStack
+  put "levureBakersAssistant" into tMainStack
 
   # Bring all behaviors into the stack
   put levureGetUIStacks("templates") into tStacksA

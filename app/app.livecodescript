@@ -41,7 +41,7 @@ command OpenApplication
   # Open UI stack
 
   # Open the starter app sample window UI stack
-  go stack "Bakers Assistant"
+  go stack "levureBakersAssistant"
 end OpenApplication
 
 
