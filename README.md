@@ -8,3 +8,7 @@ Baker's Assistant is a plugin for [LiveCode](https://www.livecode.com) that help
 # Installation
 
 You will find the plugin in a subfolder of the `./builds/release/` folder. Download the latest version of **bakers_assistant_plugin.livecode** file and place it in the [LiveCode plugins](http://lessons.livecode.com/m/4071/l/6348-how-to-install-a-3rd-party-plugin-in-the-livecode-ide) folder.
+
+# Demonstration
+
+Watch [this screencast](https://www.youtube.com/watch?v=ueWTE96gTvo) for a demonstration of how the plugin works.
