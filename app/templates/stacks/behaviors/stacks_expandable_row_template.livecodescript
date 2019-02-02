@@ -29,7 +29,7 @@ on FillInData pDataA, pRow
 
   set the foregroundColor of widget "Toggle" of me to tExpandColor
 
-  set the visible of widget "OpenStack" of me to pDataA["type"] is "stack"
+  set the visible of widget "OpenStack" of me to pDataA["type"] is among the items of "stack,card"
   set the visible of widget "Reveal" of me to pDataA["type"] is "stack"
 end FillInData
 
