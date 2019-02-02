@@ -282,6 +282,23 @@ function CardOf pControl
 end CardOf
 
 
+function StackOf pControl
+  local theCharNo
+
+  put the long ID of pControl into pControl ## force the long id
+
+  if word 1 of pControl is not "stack" then
+    put offset(" of stack ", pControl) into theCharNo
+    if theCharNo > 0 then
+      delete char 1 to (theCharNo + 3) of pControl
+    else
+      put empty into pControl
+    end if
+  end if
+  return pControl
+end StackOf
+
+
 command fileCreateAllFoldersInPath pPath, pRootPath, pPerms
   local tError, tCheck, tPathSegment
 

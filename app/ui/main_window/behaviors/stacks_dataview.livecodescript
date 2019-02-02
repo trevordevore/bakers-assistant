@@ -1,9 +1,7 @@
 ﻿script "com.bakersast.dataview.stacks" with behavior "DataView Tree Behavior"
 
 on selectedRowChanged pRow, pPreviousRow
-  if the dvRowType[pRow] of me is "stack" then
-    uiPreviewUIStack
-  end if
+  uiPreviewControl the dvRowId[pRow] of me
 end selectedRowChanged
 
 
@@ -38,10 +36,18 @@ end DataForNode
 
 
 on mouseDoubleUp pBtnNum
-  local tStackFile
+  local tControl
 
   if pBtnNum is 1 and the dvRowControl of the target is not empty then
-    go stack the uSelectedStackFilename of me
+    put the uSelectedControlId of me into tControl
+    switch word 1 of tControl
+      case "card"
+      case "stack"
+        go tControl
+        break
+      default
+        go CardOf(tControl)
+    end switch
   end if
 end mouseDoubleUp
 
@@ -50,11 +56,11 @@ on mouseUp pBtnNum
   if pBtnNum is 1 then
     switch the short name of the target
       case "OpenStack"
-        go stack the uSelectedStackFilename of me
+        go (the uSelectedControlId of me)
         break
       case "Reveal"
         set the itemDelimiter to "/"
-        launch document item 1 to -2 of the effective filename of (the uSelectedStackFilename of me)
+        launch document item 1 to -2 of the effective filename of (the uSelectedControlId of me)
         break
       case "Toggle"
         ToggleRow the dvRow of the dvRowControl of the target
@@ -64,11 +70,11 @@ on mouseUp pBtnNum
 end mouseUp
 
 
-getProp uSelectedStackName
+getProp uSelectedControlName
   return GetValueForKeyInRow(the dvHilitedRow of me, "name")
-end uSelectedStackName
+end uSelectedControlName
 
 
-getProp uSelectedStackFilename
+getProp uSelectedControlId
   return GetValueForKeyInRow(the dvHilitedRow of me, "id")
-end uSelectedStackFilename
+end uSelectedControlId
