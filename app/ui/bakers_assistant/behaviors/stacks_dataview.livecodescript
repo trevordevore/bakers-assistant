@@ -50,6 +50,7 @@ on mouseDoubleUp pBtnNum
         break
       default
         go CardOf(tControl)
+        select tControl
     end switch
   end if
 end mouseDoubleUp
