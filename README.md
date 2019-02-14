@@ -12,3 +12,7 @@ You will find the plugin in a subfolder of the `./builds/release/` folder. Downl
 # Demonstration
 
 Watch [this screencast](https://www.youtube.com/watch?v=ueWTE96gTvo) for a demonstration of how the plugin works.
+
+# Packaging Plugin
+
+To package the plugin for use in the LiveCode plugins folder load the application into the IDE and call `BuildPlugin "release"` from the message box. A single file, packaged version, of the app will appear in the `./builds/release` folder under a folder named after the current version defined in `app.yml`.
