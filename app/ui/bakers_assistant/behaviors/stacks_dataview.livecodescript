@@ -27,6 +27,9 @@ Returns: nothing
 command DataForNode pNodeA, pRow, @rDataA, @rTemplate
   put pNodeA into rDataA
 
+  put rDataA["type"] is "stack" and the selectedText of button "UIType" is "Embeddable Views" \
+        into rDataA["can insert"]
+
   if pNodeA["type"] is among the items of "stack,card,group" then
     put "expandable" into rTemplate
   else
@@ -61,6 +64,9 @@ on mouseUp pBtnNum
       case "Reveal"
         set the itemDelimiter to "/"
         launch document item 1 to -2 of the effective filename of (the uSelectedControlId of me)
+        break
+      case "InsertEmbeddableView"
+        uiInsertEmbeddableViewIntoTopStack the uSelectedControlName of me
         break
       case "Toggle"
         ToggleRow the dvRow of the dvRowControl of the target

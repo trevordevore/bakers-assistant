@@ -31,6 +31,7 @@ on FillInData pDataA, pRow
 
   set the visible of widget "OpenStack" of me to pDataA["type"] is among the items of "stack,card"
   set the visible of widget "Reveal" of me to pDataA["type"] is "stack"
+  set the visible of widget "InsertEmbeddableView" of me to pDataA["can insert"]
 end FillInData
 
 
@@ -58,7 +59,12 @@ on LayoutControl pControlRect
   set the left of widget "Toggle" of me to item 1 of pControlRect + 7 + tInset
 
   set the right of widget "OpenStack" of me to item 3 of pControlRect - 10
-  set the right of widget "Reveal" of me to the left of widget "OpenStack" of me - 8
+  set the right of widget "InsertEmbeddableView" of me to the left of widget "OpenStack" of me - 8
+  if the visible of widget "InsertEmbeddableView" of me then
+    set the right of widget "Reveal" of me to the left of widget "InsertEmbeddableView" of me - 8
+  else
+    set the right of widget "Reveal" of me to the left of widget "OpenStack" of me - 8
+  end if
 
   put the rect of field "Label" of me into tRect
   put the right of widget "Toggle" of me into item 1 of tRect
