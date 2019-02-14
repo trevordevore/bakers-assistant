@@ -9,11 +9,16 @@ pRow: The row number that this row control is associated with.
 Returns: nothing
 */
 on FillInData pDataA, pRow
-  local tExpandColor
+  local tLabel, tExpandColor
 
   put "80,80,80" into tExpandColor
 
-  set the text of field "Label" of me to pDataA["control name"]
+  put pDataA["control name"] into tLabel
+  if pDataA["is embeddable view"] then
+    put " [embedded]" after tLabel
+  end if
+
+  set the text of field "Label" of me to tLabel
   set the tooltip of field "Label" of me to pDataA["id"]
 
   if pDataA["expanded"] then

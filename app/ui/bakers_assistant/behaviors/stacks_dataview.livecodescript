@@ -30,6 +30,9 @@ command DataForNode pNodeA, pRow, @rDataA, @rTemplate
   put rDataA["type"] is "stack" and the selectedText of button "UIType" is "Embeddable Views" \
         into rDataA["can insert"]
 
+  put rDataA["type"] is "group" and the uEmbeddableViewKind of rDataA["id"] is not empty \
+        into rDataA["is embeddable view"]
+
   if pNodeA["type"] is among the items of "stack,card,group" then
     put "expandable" into rTemplate
   else
