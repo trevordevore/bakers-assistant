@@ -45,6 +45,22 @@ command OpenApplication
 end OpenApplication
 
 
+/**
+Summary: Packages up the stack as a plugin for the LiveCode IDE.
+
+Parameters:
+pBuildProfile: The name of the profile to build. Default is "release".
+
+Returns: nothing
+*/
+command BuildPlugin pBuildProfile
+  local tStack
+
+  put levureAppFolder() & "/package bakers assistant.livecodescript" into tStack
+  send "PackageBakersAssistant" to stack tStack in 0 seconds
+end BuildPlugin
+
+
 command PreShutdownApplication
   # Called before the application shuts down.
   # Perform any cleanup.

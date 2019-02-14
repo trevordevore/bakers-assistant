@@ -29,22 +29,6 @@ on preOpenStack
 end preOpenStack
 
 
-/**
-Summary: Packages up the stack as a plugin for the LiveCode IDE.
-
-Parameters:
-pBuildProfile: The name of the profile to build. Default is "release".
-
-Returns: nothing
-*/
-command BuildPlugin pBuildProfile
-  local tStack
-
-  put levureAppFolder() & "/package bakers assistant.livecodescript" into tStack
-  send "PackageBakersAssistant" to stack tStack in 0 seconds
-end BuildPlugin
-
-
 command ResizeGlobalControls
   set the rect of widget "Navigation" to 20,20,the width of this card -20, 20+32
 end ResizeGlobalControls
