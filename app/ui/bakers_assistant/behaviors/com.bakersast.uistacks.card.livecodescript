@@ -47,8 +47,8 @@ private command _resizePreview
 
   put max(1, the uPixelScale of image "Preview") into tPixelScale
 
-  put ScaleDimensionsToFit(the width of image "Preview" / tPixelScale, \
-        the height of image "Preview" / tPixelScale, \
+  put ScaleDimensionsToFit(the formattedwidth of image "Preview" / tPixelScale, \
+        the formattedheight of image "Preview" / tPixelScale, \
         the width of button "Preview", the height of button "Preview", 1) into tDimensions
   set the width of image "Preview" to item 1 of tDimensions
   set the height of image "Preview" to item 2 of tDimensions
