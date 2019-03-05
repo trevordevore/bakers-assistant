@@ -7,7 +7,7 @@ command PackageBakersAssistant pBuildProfile
 
   if pBuildProfile is empty then put "release" into pBuildProfile
 
-  put "BakersAssistant" into tMainStack
+  put "levureBakersAssistant" into tMainStack
 
   # Bring all behaviors into the stack
   put levureGetUIStacks("templates") into tStacksA
@@ -31,8 +31,7 @@ command PackageBakersAssistant pBuildProfile
   stop using packagerFilename()
 
   if tError is empty then
-    set the name of stack tMainStack to "levureBakersAssistant"
-    save stack "levureBakersAssistant" as tBuildFolder & "/bakers_assistant_plugin.livecode"
+    save stack tMainStack as tBuildFolder & "/bakers_assistant_plugin.livecode"
   end if
 
   if tError is not empty then
