@@ -41,11 +41,7 @@ command OpenApplication
   # Open UI stack
 
   # Open the starter app sample window UI stack
-  if the environment is "development" then
-    go stack "BakersAssistant"
-  else
-    go stack "levureBakersAssistant"
-  end if
+  go stack "levureBakersAssistant"
 end OpenApplication
 
 
