@@ -25,6 +25,8 @@ Summary: Request from DataView Tree for node data to display.
 Returns: nothing
 */
 command DataForNode pNodeA, pRow, @rDataA, @rTemplate
+  local tTooltip, tBehavior
+
   put pNodeA into rDataA
 
   put rDataA["type"] is "stack" and the selectedText of button "UIType" is "Embeddable Views" \
@@ -32,6 +34,17 @@ command DataForNode pNodeA, pRow, @rDataA, @rTemplate
 
   put rDataA["type"] is "group" and the uEmbeddableViewKind of rDataA["id"] is not empty \
         into rDataA["is embeddable view"]
+
+  put the long name of rDataA["id"] into tTooltip
+  if word 1 of rDataA["id"] is not "stack" then
+    put cr & "id:" && the short id of rDataA["id"] after tTooltip
+  end if
+  put the behavior of rDataA["id"] into tBehavior
+  repeat while tBehavior is not empty
+    put cr & "   behavior:" && tBehavior && "[" & the long name of tBehavior & "]" after tTooltip
+    put the behavior of tBehavior into tBehavior
+  end repeat
+  put tTooltip into rDataA["tooltip"]
 
   if pNodeA["type"] is among the items of "stack,card,group" then
     put "expandable" into rTemplate

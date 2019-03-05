@@ -10,7 +10,7 @@ Returns: nothing
 */
 on FillInData pDataA, pRow
   set the text of field "Label" of me to pDataA["control name"]
-  set the tooltip of field "Label" of me to pDataA["id"]
+  set the tooltip of field "Label" of me to pDataA["tooltip"]
 end FillInData
 
 

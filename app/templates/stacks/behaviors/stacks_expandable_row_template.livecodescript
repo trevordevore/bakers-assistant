@@ -19,7 +19,7 @@ on FillInData pDataA, pRow
   end if
 
   set the text of field "Label" of me to tLabel
-  set the tooltip of field "Label" of me to pDataA["id"]
+  set the tooltip of field "Label" of me to pDataA["tooltip"]
 
   if pDataA["expanded"] then
     set the iconPath of widget "Toggle" of me to the uExpandedIconPath of the dvControl of me
