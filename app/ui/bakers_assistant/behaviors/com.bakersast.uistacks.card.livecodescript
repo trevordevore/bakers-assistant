@@ -100,6 +100,7 @@ command uiPreviewControl pControl
   put the height of pControl * tPixelScale into tHeight
 
   if tWidth > 0 and tHeight > 0 then
+    set the resizeQuality of image "Preview" to "good"
     set the uPixelScale of image "Preview" to tPixelScale
     export snapshot from pControl at size tWidth,tHeight to image "Preview" as PNG
     _resizePreview
