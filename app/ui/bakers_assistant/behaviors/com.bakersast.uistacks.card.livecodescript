@@ -1,4 +1,6 @@
 ﻿script "com.bakersast.uistacks.card"
+local sNodeExpandedCacheA
+
 
 command _resetUI
   set the dvTree of group "Stacks" to empty
@@ -121,6 +123,9 @@ command DisplayActionMenu pObject
           "Open Property Inspector/|open property inspector" & cr & \
           "Copy Long ID/|copy long id" & cr & \
           "Copy Stack/|copy stack" & cr & \
+          "-" & cr & \
+          "Refresh controls/|refresh children" & cr & \
+          "-" & cr & \
           "Reveal stack file/|reveal stack file" into tMenu
 
       if the selectedText of button "UIType" is "Embeddable Views" then
@@ -133,6 +138,9 @@ command DisplayActionMenu pObject
           "Open Property Inspector/|open property inspector" & cr & \
           "Copy Long ID/|copy long id" & cr & \
           "Copy Card/|copy card" & cr & \
+          "-" & cr & \
+          "Refresh controls/|refresh children" & cr & \
+          "-" & cr & \
           "Move Up/|move up" & cr & \
           "Move Down/|move down" into tMenu
       break
@@ -142,6 +150,9 @@ command DisplayActionMenu pObject
           "Open Property Inspector/|open property inspector" & cr & \
           "Copy Long ID/|copy long id" & cr & \
           "Copy Group/|copy control" & cr & \
+          "-" & cr & \
+          "Refresh controls/|refresh children" & cr & \
+          "-" & cr & \
           "Move Up/|move up" & cr & \
           "Move Down/|move down" into tMenu
       break
@@ -192,6 +203,10 @@ command ProcessSelectedAction pTarget, pAction
 
     case "move down"
       answer "todo"
+      break
+
+    case "refresh children"
+      dispatch "RefreshRowChildren" to group "Stacks" with item 1 of the dvHilitedRow of group "Stacks"
       break
   end switch
 
@@ -283,9 +298,14 @@ private function createRootStackNodes
     put tStackA["name"] into tNodeA["name"]
     put the name of stack tStackA["name"] into tNodeA["control name"]
     put "stack" into tNodeA["type"]
-    put false into tNodeA["expanded"]
+    put sNodeExpandedCacheA[tNodeA["id"]] into tNodeA["expanded"]
     put false into tNodeA["is leaf"]
-    put empty into tNodeA["children"]
+
+    if tNodeA["expanded"] then
+      put createNodesForStack(tNodeA["id"]) into tNodeA["children"]
+    else
+      put empty into tNodeA["children"]
+    end if
 
     add 1 to tIndex
     put tNodeA into tNodesA[tIndex]
@@ -317,9 +337,14 @@ private function createNodesForStack pStackRef
     put tStack into tNodeA["name"]
     put the name of stack tStack into tNodeA["control name"]
     put "stack" into tNodeA["type"]
-    put false into tNodeA["expanded"]
+    put sNodeExpandedCacheA[tNodeA["id"]] into tNodeA["expanded"]
     put false into tNodeA["is leaf"]
-    put empty into tNodeA["children"]
+
+    if tNodeA["expanded"] then
+      put createNodesForStack(tNodeA["id"]) into tNodeA["children"]
+    else
+      put empty into tNodeA["children"]
+    end if
 
     add 1 to tIndex
     put tNodeA into tNodesA[tIndex]
@@ -331,9 +356,14 @@ private function createNodesForStack pStackRef
     put the short name of card id tCardId of pStackRef into tNodeA["name"]
     put the name of card id tCardId of pStackRef into tNodeA["control name"]
     put "card" into tNodeA["type"]
-    put false into tNodeA["expanded"]
+    put sNodeExpandedCacheA[tNodeA["id"]] into tNodeA["expanded"]
     put false into tNodeA["is leaf"]
-    put empty into tNodeA["children"]
+
+    if tNodeA["expanded"] then
+      put createNodesForCardOrGroup(tNodeA["id"]) into tNodeA["children"]
+    else
+      put empty into tNodeA["children"]
+    end if
 
     add 1 to tIndex
     put tNodeA into tNodesA[tIndex]
@@ -351,13 +381,6 @@ private function createNodesForCardOrGroup pControlRef
   repeat for each line tControlId in tControlIds
     put empty into tNodeA
     put the long id of control id tControlId of pControlRef into tNodeA["id"]
-    put the short name of control id tControlId of pControlRef into tNodeA["name"]
-    put the name of control id tControlId of pControlRef into tNodeA["control name"]
-    put word 1 of tNodeA["id"] into tNodeA["type"]
-    put false into tNodeA["expanded"]
-    put tNodeA["type"] is not "group" into tNodeA["is leaf"]
-    put empty into tNodeA["children"]
-
     # For background groups (and any children controls) the card id must be updated
     # because the `long id` of the control will have the id of the current card.
     # This will lead to duplicate `id`s in the tree. If the group is shown in the tree
@@ -365,10 +388,31 @@ private function createNodesForCardOrGroup pControlRef
     get matchText(pControlRef, "card id ([0-9]+)", tCardId)
     put replacetext(tNodeA["id"], "card id ([0-9]+)", " card id" && tCardId) into tNodeA["id"]
 
+    put the short name of control id tControlId of pControlRef into tNodeA["name"]
+    put the name of control id tControlId of pControlRef into tNodeA["control name"]
+    put word 1 of tNodeA["id"] into tNodeA["type"]
+    put sNodeExpandedCacheA[tNodeA["id"]] into tNodeA["expanded"]
+    put tNodeA["type"] is not "group" into tNodeA["is leaf"]
+
+    if not tNodeA["is leaf"] and tNodeA["expanded"] then
+      put createNodesForCardOrGroup(tNodeA["id"]) into tNodeA["children"]
+    else
+      put empty into tNodeA["children"]
+    end if
+
     add 1 to tIndex
     put tNodeA into tNodesA[tIndex]
   end repeat
 
   return tNodesA
 end createNodesForCardOrGroup
+
+
+setProp uIsNodeExpanded[pNodeId] pBoolean
+  if pBoolean then
+    put true into sNodeExpandedCacheA[pNodeId]
+  else
+    delete local sNodeExpandedCacheA[pNodeId]
+  end if
+end uIsNodeExpanded
 

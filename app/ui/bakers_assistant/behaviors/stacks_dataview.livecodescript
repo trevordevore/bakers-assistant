@@ -1,22 +1,40 @@
 ﻿script "com.bakersast.dataview.stacks" with behavior "DataView Tree Behavior"
 
+
 on selectedRowChanged pRow, pPreviousRow
   uiPreviewControl the dvRowId[pRow] of me
 end selectedRowChanged
 
 
 command ToggleRow pRow
+  local tRowId
+
+  put the dvRowId[pRow] of me into tRowId
+
   if the dvRowIsExpanded[pRow] of me then
     set the dvRowChildren[pRow] of me to empty
     SetRowIsExpanded pRow, empty, false
+
+    set the uIsNodeExpanded[tRowId] of this card to false
   else
     local tNodesA
 
-    put createNodesForControlChildren(the dvRowId[pRow] of me) into tNodesA
+    put createNodesForControlChildren(tRowId) into tNodesA
     set the dvRowChildren[pRow] of me to tNodesA
     SetRowIsExpanded pRow, empty, true
+
+    set the uIsNodeExpanded[tRowId] of this card to true
   end if
 end ToggleRow
+
+
+command RefreshRowChildren pRow
+  local tNodesA
+
+  put createNodesForControlChildren(the dvRowId[pRow] of me) into tNodesA
+  set the dvRowChildren[pRow] of me to tNodesA
+  RefreshViewRows
+end RefreshRowChildren
 
 
 /**
