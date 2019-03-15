@@ -112,6 +112,149 @@ command uiPreviewControl pControl
 end uiPreviewControl
 
 
+command DisplayActionMenu pObject
+  local tMenu
+
+  switch word 1 of pObject
+    case "stack"
+      put "Open/|open" & cr & \
+          "Open Property Inspector/|open property inspector" & cr & \
+          "Copy Long ID/|copy long id" & cr & \
+          "Copy Stack/|copy stack" & cr & \
+          "Reveal stack file/|reveal stack file" into tMenu
+      break
+
+    case "card"
+      put "Open/|open" & cr & \
+          "Open Property Inspector/|open property inspector" & cr & \
+          "Copy Long ID/|copy long id" & cr & \
+          "Copy Card/|copy card" & cr & \
+          "Move Up/|move up" & cr & \
+          "Move Down/|move down" into tMenu
+      break
+
+    case "group"
+      put "Select/|select" & cr & \
+          "Open Property Inspector/|open property inspector" & cr & \
+          "Copy Long ID/|copy long id" & cr & \
+          "Copy Group/|copy control" & cr & \
+          "Move Up/|move up" & cr & \
+          "Move Down/|move down" into tMenu
+
+      if the selectedText of button "UIType" is "Embeddable Views" then
+        put cr & "Add View to Current Card/|insert embeddable view" after tMenu
+      end if
+      break
+
+    default
+      put "Select/|select" & cr & \
+          "Open Property Inspector/|open property inspector" & cr & \
+          "Copy Long ID/|copy long id" & cr & \
+          "Copy Control/|copy control" & cr & \
+          "Move Up/|move up" & cr & \
+          "Move Down/|move down" into tMenu
+      break
+  end switch
+
+  set the text of button "ActionMenuPopup" to tMenu
+  set the uTargetObject of button "ActionMenuPopup" to pObject
+  popup button "ActionMenuPopup" at the bottomleft of the target
+end DisplayActionMenu
+
+
+command ProcessSelectedAction pTarget, pAction
+  # Global actions
+  switch pAction
+    case "copy long id"
+      set the clipboarddata to pTarget
+      break
+
+    case "open"
+      go pTarget
+      break
+
+    case "select"
+      go CardOf(pTarget)
+      select pTarget
+      break
+
+    case "copy control"
+      copy pTarget
+      break
+
+    case "open property inspector"
+      revIDEOpenInspectorForObjects pTarget
+      break
+
+    case "move up"
+      answer "todo"
+      break
+
+    case "move down"
+      answer "todo"
+      break
+  end switch
+
+  # Control specific actions
+  switch word 1 of pTarget
+    case "stack"
+      _processStackAction pTarget, pAction
+      break
+
+    case "card"
+      _processCardAction pTarget, pAction
+      break
+
+    case "group"
+      _processGroupAction pTarget, pAction
+      break
+
+    default
+      _processControlAction pTarget, pAction
+      break
+  end switch
+end ProcessSelectedAction
+
+
+private command _processStackAction pTarget, pAction
+  switch pAction
+    case "copy stack"
+      copy pTarget
+      break
+
+    case "reveal stack file"
+      set the itemDelimiter to "/"
+      launch document item 1 to -2 of the effective filename of pTarget
+      break
+  end switch
+end _processStackAction
+
+
+private command _processCardAction pTarget, pAction
+  switch pAction
+    case "copy card"
+      copy pTarget
+      break
+  end switch
+end _processCardAction
+
+
+private command _processGroupAction pTarget, pAction
+  switch pAction
+    case "insert embeddable view"
+      uiInsertEmbeddableViewIntoTopStack the short name of pTarget
+      break
+  end switch
+end _processGroupAction
+
+
+private command _processControlAction pTarget, pAction
+  switch pAction
+
+  end switch
+end _processControlAction
+
+
 command uiInsertEmbeddableViewIntoTopStack pStackShortName
   local tViewKind
 

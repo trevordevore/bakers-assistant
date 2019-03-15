@@ -33,10 +33,6 @@ on FillInData pDataA, pRow
   end if
 
   set the foregroundColor of widget "Toggle" of me to tExpandColor
-
-  set the visible of widget "OpenStack" of me to pDataA["type"] is among the items of "stack,card"
-  set the visible of widget "Reveal" of me to pDataA["type"] is "stack"
-  set the visible of widget "InsertEmbeddableView" of me to pDataA["can insert"]
 end FillInData
 
 
@@ -63,17 +59,11 @@ on LayoutControl pControlRect
 
   set the left of widget "Toggle" of me to item 1 of pControlRect + 7 + tInset
 
-  set the right of widget "OpenStack" of me to item 3 of pControlRect - 10
-  set the right of widget "InsertEmbeddableView" of me to the left of widget "OpenStack" of me - 8
-  if the visible of widget "InsertEmbeddableView" of me then
-    set the right of widget "Reveal" of me to the left of widget "InsertEmbeddableView" of me - 8
-  else
-    set the right of widget "Reveal" of me to the left of widget "OpenStack" of me - 8
-  end if
+  set the right of widget "ActionMenu" of me to item 3 of pControlRect - 10
 
   put the rect of field "Label" of me into tRect
   put the right of widget "Toggle" of me into item 1 of tRect
-  put the left of widget "Reveal" of me - 8 into item 3 of tRect
+  put the left of widget "ActionMenu" of me - 10 into item 3 of tRect
   set the rect of field "Label" of me to tRect
 
   set the rect of graphic "Background" of me to pControlRect
@@ -113,3 +103,14 @@ behavior then do so here.
 setProp dvHilite[pHiliteColor] pBoolean
 
 end dvHilite
+
+
+on mouseDown pBtnNum
+  if pBtnNum is 1 then
+    switch the short name of the target
+      case "ActionMenu"
+        DisplayActionMenu the dvRowId[the dvRow of me] of me
+        break
+    end switch
+  end if
+end mouseDown

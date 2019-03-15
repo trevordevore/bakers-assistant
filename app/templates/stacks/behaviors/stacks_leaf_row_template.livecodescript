@@ -35,9 +35,11 @@ on LayoutControl pControlRect
   put the dvRowLevel[the dvRow of me] of me - 1 into tLevel
   put tLevel * 15 into tInset
 
+  set the right of widget "ActionMenu" of me to item 3 of pControlRect - 10
+
   put the rect of field "Label" of me into tRect
   put item 1 of pControlRect + tInset + 12 + 7 into item 1 of tRect
-  put item 3 of pControlRect - 10 into item 3 of tRect
+  put the left of widget "ActionMenu" of me - 10 into item 3 of tRect
   set the rect of field "Label" of me to tRect
 
   set the rect of graphic "Background" of me to pControlRect
@@ -77,3 +79,14 @@ behavior then do so here.
 setProp dvHilite[pHiliteColor] pBoolean
 
 end dvHilite
+
+
+on mouseDown pBtnNum
+  if pBtnNum is 1 then
+    switch the short name of the target
+      case "ActionMenu"
+        DisplayActionMenu the dvRowId[the dvRow of me] of me
+        break
+    end switch
+  end if
+end mouseDown

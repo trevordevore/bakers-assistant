@@ -75,16 +75,6 @@ end mouseDoubleUp
 on mouseUp pBtnNum
   if pBtnNum is 1 then
     switch the short name of the target
-      case "OpenStack"
-        go (the uSelectedControlId of me)
-        break
-      case "Reveal"
-        set the itemDelimiter to "/"
-        launch document item 1 to -2 of the effective filename of (the uSelectedControlId of me)
-        break
-      case "InsertEmbeddableView"
-        uiInsertEmbeddableViewIntoTopStack the uSelectedControlName of me
-        break
       case "Toggle"
         ToggleRow the dvRow of the dvRowControl of the target
         break
