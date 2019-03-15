@@ -1,3 +1,9 @@
 [submodule "levure"]
 	path = levure
 	url = https://github.com/trevordevore/levure.git
+[submodule "app/helpers/dataview"]
+	path = app/helpers/dataview
+	url = https://github.com/trevordevore/levurehelper-dataview.git
+[submodule "app/helpers/dataview_tree"]
+	path = app/helpers/dataview_tree
+	url = https://github.com/trevordevore/levurehelper-dataview_tree.git

@@ -46,8 +46,6 @@ backscripts:
   - folder: ./backscripts
 helpers:
   - folder: ./helpers
-  - filename: ../../levure helpers/dataview
-  - filename: ../../levure helpers/dataview_tree
   - filename: "[[FRAMEWORK]]/helpers/preferences"
 behaviors:
   - folder: ./behaviors
