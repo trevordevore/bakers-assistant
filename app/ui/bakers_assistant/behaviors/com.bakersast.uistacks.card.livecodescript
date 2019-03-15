@@ -122,6 +122,10 @@ command DisplayActionMenu pObject
           "Copy Long ID/|copy long id" & cr & \
           "Copy Stack/|copy stack" & cr & \
           "Reveal stack file/|reveal stack file" into tMenu
+
+      if the selectedText of button "UIType" is "Embeddable Views" then
+        put cr & "Add View to Current Card/|insert embeddable view" after tMenu
+      end if
       break
 
     case "card"
@@ -140,10 +144,6 @@ command DisplayActionMenu pObject
           "Copy Group/|copy control" & cr & \
           "Move Up/|move up" & cr & \
           "Move Down/|move down" into tMenu
-
-      if the selectedText of button "UIType" is "Embeddable Views" then
-        put cr & "Add View to Current Card/|insert embeddable view" after tMenu
-      end if
       break
 
     default
@@ -226,6 +226,10 @@ private command _processStackAction pTarget, pAction
       set the itemDelimiter to "/"
       launch document item 1 to -2 of the effective filename of pTarget
       break
+
+    case "insert embeddable view"
+      uiInsertEmbeddableViewIntoTopStack the short name of pTarget
+      break
   end switch
 end _processStackAction
 
@@ -241,9 +245,7 @@ end _processCardAction
 
 private command _processGroupAction pTarget, pAction
   switch pAction
-    case "insert embeddable view"
-      uiInsertEmbeddableViewIntoTopStack the short name of pTarget
-      break
+
   end switch
 end _processGroupAction
 
