@@ -106,6 +106,8 @@ end dvHilite
 
 
 on mouseDown pBtnNum
+  dvMouseDown pBtnNum
+
   if pBtnNum is 1 then
     switch the short name of the target
       case "ActionMenu"
