@@ -84,6 +84,10 @@ end PopulateUIStacks
 command uiPreviewControl pControl
   local tStack
 
+  if there is not a pControl then
+    return empty
+  end if
+
   lock screen
 
   show field "Preview"
@@ -121,8 +125,10 @@ command DisplayActionMenu pObject
     case "stack"
       put "Open/|open" & cr & \
           "Open Property Inspector/|open property inspector" & cr & \
+          "-" & cr & \
           "Copy Long ID/|copy long id" & cr & \
           "Copy Stack/|copy stack" & cr & \
+          _enableMenuLine("Paste Object/|paste object", "objects" is among the keys of the clipboarddata) & cr & \
           "-" & cr & \
           "Refresh controls/|refresh children" & cr & \
           "-" & cr & \
@@ -136,8 +142,10 @@ command DisplayActionMenu pObject
     case "card"
       put "Open/|open" & cr & \
           "Open Property Inspector/|open property inspector" & cr & \
+          "-" & cr & \
           "Copy Long ID/|copy long id" & cr & \
           "Copy Card/|copy card" & cr & \
+          _enableMenuLine("Paste Object/|paste object", "objects" is among the keys of the clipboarddata) & cr & \
           "-" & cr & \
           "Refresh controls/|refresh children" & cr & \
           "-" & cr & \
@@ -148,8 +156,10 @@ command DisplayActionMenu pObject
     case "group"
       put "Select/|select" & cr & \
           "Open Property Inspector/|open property inspector" & cr & \
+          "-" & cr & \
           "Copy Long ID/|copy long id" & cr & \
           "Copy Group/|copy control" & cr & \
+          _enableMenuLine("Paste Object/|paste object", "objects" is among the keys of the clipboarddata) & cr & \
           "-" & cr & \
           "Refresh controls/|refresh children" & cr & \
           "-" & cr & \
@@ -160,8 +170,11 @@ command DisplayActionMenu pObject
     default
       put "Select/|select" & cr & \
           "Open Property Inspector/|open property inspector" & cr & \
+          "-" & cr & \
           "Copy Long ID/|copy long id" & cr & \
           "Copy Control/|copy control" & cr & \
+          _enableMenuLine("Paste Object/|paste object", "objects" is among the keys of the clipboarddata) & cr & \
+          "-" & cr & \
           "Move Up/|move up" & cr & \
           "Move Down/|move down" into tMenu
       break
@@ -171,6 +184,14 @@ command DisplayActionMenu pObject
   set the uTargetObject of button "ActionMenuPopup" to pObject
   popup button "ActionMenuPopup" at the bottomleft of the target
 end DisplayActionMenu
+
+
+private function _enableMenuLine pMenuLine, pBoolean
+  if not pBoolean then
+    put "(" before word 1 of pMenuLine
+  end if
+  return pMenuLine
+end _enableMenuLine
 
 
 command ProcessSelectedAction pTarget, pAction
@@ -191,6 +212,15 @@ command ProcessSelectedAction pTarget, pAction
 
     case "copy control"
       copy pTarget
+      break
+
+    case "paste object"
+      if word 1 of pTarget is "stack" then
+        go pTarget
+      else
+        go CardOf(pTarget)
+      end if
+      _pasteObjectAfterControl pTarget
       break
 
     case "open property inspector"
@@ -270,6 +300,65 @@ private command _processControlAction pTarget, pAction
 
   end switch
 end _processControlAction
+
+
+private command _pasteObjectAfterControl pObject
+  local tNewControl, tControlId, tParentControl, tParentRow
+
+  lock screen
+  select empty
+  paste
+  put it into tNewControl
+  put the short id of tNewControl into tControlId
+
+  switch word 1 of tNewControl
+    case "stack"
+      # refresh entire tree
+      break
+    case "card"
+      set the index of tNewControl to the index of CardOf(pObject) + 1
+      put StackOf(pObject) into tParentControl
+      break
+
+    default
+      # relayer new control
+      switch word 1 of pObject
+        case "stack"
+        case "card"
+          # make first object
+          relayer tNewControl to back of this card
+          put pObject into tParentControl
+          break
+
+        case "group"
+          relayer tNewControl to back of pObject
+          put pObject into tParentControl
+          break
+
+        default
+          relayer tNewControl after pObject
+          put the long id of the owner of pObject into tParentControl
+          break
+      end switch
+  end switch
+
+  if tParentControl is not empty then
+    # Adjust control ref after relayering
+    if word 1 of tNewControl is not among the items of "stack,card" then
+      put the long id of control id tControlId of tParentControl into tNewControl
+    end if
+
+    put the dvRowOfId[tParentControl] of group "Stacks" of me into tParentRow
+    if tParentRow > 0 then
+      dispatch "RefreshRowChildren" to group "Stacks" of me with tParentRow
+      set the dvHilitedId of group "Stacks" of me to tNewControl
+    end if
+  else
+    PopulateUIStacks
+  end if
+
+  unlock screen
+end _pasteObjectAfterControl
 
 
 command uiInsertEmbeddableViewIntoTopStack pStackShortName
@@ -380,13 +469,8 @@ private function createNodesForCardOrGroup pControlRef
 
   repeat for each line tControlId in tControlIds
     put empty into tNodeA
-    put the long id of control id tControlId of pControlRef into tNodeA["id"]
-    # For background groups (and any children controls) the card id must be updated
-    # because the `long id` of the control will have the id of the current card.
-    # This will lead to duplicate `id`s in the tree. If the group is shown in the tree
-    # more than once than only the last instance will display data.
-    get matchText(pControlRef, "card id ([0-9]+)", tCardId)
-    put replacetext(tNodeA["id"], "card id ([0-9]+)", " card id" && tCardId) into tNodeA["id"]
+    put _correctCardIdInBackgoundGroups(the long id of control id tControlId of pControlRef, \
+          pControlRef) into tNodeA["id"]
 
     put the short name of control id tControlId of pControlRef into tNodeA["name"]
     put the name of control id tControlId of pControlRef into tNodeA["control name"]
@@ -406,6 +490,30 @@ private function createNodesForCardOrGroup pControlRef
 
   return tNodesA
 end createNodesForCardOrGroup
+
+
+/**
+Summary: Fix card in controls in a background group.
+
+Parameters:
+pControl: The control that may have an invalid card id.
+pReferenceControl: A control known to have the correct card id.
+
+Description:
+For background groups (and any children controls) the card id must be updated
+because the `long id` of the control will have the id of the current card.
+This will lead to duplicate `id`s in the tree. If the group is shown in the tree
+more than once than only the last instance will display data.
+
+Returns: id
+*/
+private function _correctCardIdInBackgoundGroups pControl, pReferenceControl
+  local tCardId
+
+  get matchText(pReferenceControl, "card id ([0-9]+)", tCardId)
+  put replacetext(pControl, "card id ([0-9]+)", "card id" && tCardId) into pControl
+  return pControl
+end _correctCardIdInBackgoundGroups
 
 
 setProp uIsNodeExpanded[pNodeId] pBoolean
