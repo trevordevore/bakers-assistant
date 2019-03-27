@@ -1,22 +1,46 @@
 ﻿script "com.bakersast.dataview.stacks" with behavior "DataView Tree Behavior"
 
+
 on selectedRowChanged pRow, pPreviousRow
   uiPreviewControl the dvRowId[pRow] of me
 end selectedRowChanged
 
 
 command ToggleRow pRow
+  local tRowId
+
+  put the dvRowId[pRow] of me into tRowId
+
+  if there is not a tRowId then
+    answer "Control no longer exists:" && tRowId
+    RefreshRowChildren the dvRowParentRow[pRow] of me
+    return empty
+  end if
+
   if the dvRowIsExpanded[pRow] of me then
     set the dvRowChildren[pRow] of me to empty
     SetRowIsExpanded pRow, empty, false
+
+    set the uIsNodeExpanded[tRowId] of this card to false
   else
     local tNodesA
 
-    put createNodesForControlChildren(the dvRowId[pRow] of me) into tNodesA
+    put createNodesForControlChildren(tRowId) into tNodesA
     set the dvRowChildren[pRow] of me to tNodesA
     SetRowIsExpanded pRow, empty, true
+
+    set the uIsNodeExpanded[tRowId] of this card to true
   end if
 end ToggleRow
+
+
+command RefreshRowChildren pRow
+  local tNodesA
+
+  put createNodesForControlChildren(the dvRowId[pRow] of me) into tNodesA
+  set the dvRowChildren[pRow] of me to tNodesA
+  RefreshViewRows
+end RefreshRowChildren
 
 
 /**
@@ -35,15 +59,20 @@ command DataForNode pNodeA, pRow, @rDataA, @rTemplate
   put rDataA["type"] is "group" and the uEmbeddableViewKind of rDataA["id"] is not empty \
         into rDataA["is embeddable view"]
 
-  put the long name of rDataA["id"] into tTooltip
-  if word 1 of rDataA["id"] is not "stack" then
-    put cr & "id:" && the short id of rDataA["id"] after tTooltip
-  end if
-  put the behavior of rDataA["id"] into tBehavior
-  repeat while tBehavior is not empty
-    put cr & "   behavior:" && tBehavior && "[" & the long name of tBehavior & "]" after tTooltip
-    put the behavior of tBehavior into tBehavior
-  end repeat
+  try
+    put the long name of rDataA["id"] into tTooltip
+    if word 1 of rDataA["id"] is not "stack" then
+      put cr & "id:" && the short id of rDataA["id"] after tTooltip
+    end if
+    put the behavior of rDataA["id"] into tBehavior
+    repeat while tBehavior is not empty
+      put cr & "   behavior:" && tBehavior && "[" & the long name of tBehavior & "]" after tTooltip
+      put the behavior of tBehavior into tBehavior
+    end repeat
+  catch e
+    # control may no longer exist
+    put e
+  end try
   put tTooltip into rDataA["tooltip"]
 
   if pNodeA["type"] is among the items of "stack,card,group" then
@@ -75,16 +104,6 @@ end mouseDoubleUp
 on mouseUp pBtnNum
   if pBtnNum is 1 then
     switch the short name of the target
-      case "OpenStack"
-        go (the uSelectedControlId of me)
-        break
-      case "Reveal"
-        set the itemDelimiter to "/"
-        launch document item 1 to -2 of the effective filename of (the uSelectedControlId of me)
-        break
-      case "InsertEmbeddableView"
-        uiInsertEmbeddableViewIntoTopStack the uSelectedControlName of me
-        break
       case "Toggle"
         ToggleRow the dvRow of the dvRowControl of the target
         break

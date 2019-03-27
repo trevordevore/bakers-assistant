@@ -1,6 +1,6 @@
 name: Bakers Assistant
 version: 0.1.3
-build: 3
+build: 4
 encrypt stacks: false
 multiple instances: false
 relaunch in background: false
