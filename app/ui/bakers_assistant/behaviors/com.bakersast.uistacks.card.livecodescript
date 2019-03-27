@@ -331,8 +331,8 @@ private command _moveControlUp pControl
   local tMoveControl = false
 
   put the layer of pControl into tAnchorLayer
-  if there is a control (tAnchorLayer-1) then
-    put the long id of control (tAnchorLayer-1) into tSiblingControl
+  if there is a control (tAnchorLayer-1) of CardOf(pControl) then
+    put the long id of control (tAnchorLayer-1) of CardOf(pControl) into tSiblingControl
   end if
 
   if tSiblingControl is not empty then
@@ -363,8 +363,8 @@ private command _moveControlDown pControl
   local tMoveControl = false
 
   put the layer of pControl into tAnchorLayer
-  if there is a control (tAnchorLayer+1) then
-    put the long id of control (tAnchorLayer+1) into tSiblingControl
+  if there is a control (tAnchorLayer+1) of CardOf(pControl) then
+    put the long id of control (tAnchorLayer+1) of CardOf(pControl) into tSiblingControl
   end if
 
   if tSiblingControl is not empty then
