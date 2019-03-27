@@ -145,12 +145,13 @@ command DisplayActionMenu pObject
           "-" & cr & \
           "Copy Long ID/|copy long id" & cr & \
           "Copy Card/|copy card" & cr & \
+          "Cut Card/|cut card" & cr & \
           _enableMenuLine("Paste Object/|paste object", "objects" is among the keys of the clipboarddata) & cr & \
           "-" & cr & \
           "Refresh controls/|refresh children" & cr & \
           "-" & cr & \
-          "Move Up/|move up" & cr & \
-          "Move Down/|move down" into tMenu
+          "Move Up/|move card up" & cr & \
+          "Move Down/|move card down" into tMenu
       break
 
     case "group"
@@ -159,12 +160,13 @@ command DisplayActionMenu pObject
           "-" & cr & \
           "Copy Long ID/|copy long id" & cr & \
           "Copy Group/|copy control" & cr & \
+          "Cut Group/|cut control" & cr & \
           _enableMenuLine("Paste Object/|paste object", "objects" is among the keys of the clipboarddata) & cr & \
           "-" & cr & \
           "Refresh controls/|refresh children" & cr & \
           "-" & cr & \
-          "Move Up/|move up" & cr & \
-          "Move Down/|move down" into tMenu
+          "Move Up/|move control up" & cr & \
+          "Move Down/|move control down" into tMenu
       break
 
     default
@@ -173,10 +175,11 @@ command DisplayActionMenu pObject
           "-" & cr & \
           "Copy Long ID/|copy long id" & cr & \
           "Copy Control/|copy control" & cr & \
+          "Cut Control/|cut control" & cr & \
           _enableMenuLine("Paste Object/|paste object", "objects" is among the keys of the clipboarddata) & cr & \
           "-" & cr & \
-          "Move Up/|move up" & cr & \
-          "Move Down/|move down" into tMenu
+          "Move Up/|move control up" & cr & \
+          "Move Down/|move control down" into tMenu
       break
   end switch
 
@@ -195,6 +198,8 @@ end _enableMenuLine
 
 
 command ProcessSelectedAction pTarget, pAction
+  local tControl
+
   # Global actions
   switch pAction
     case "copy long id"
@@ -210,8 +215,16 @@ command ProcessSelectedAction pTarget, pAction
       select pTarget
       break
 
+    case "copy card"
     case "copy control"
       copy pTarget
+      break
+
+    case "cut control"
+    case "cut card"
+      put the long id of the owner of pTarget into tControl
+      cut pTarget
+      _refreshControlChildrenInView tControl
       break
 
     case "paste object"
@@ -227,12 +240,12 @@ command ProcessSelectedAction pTarget, pAction
       revIDEOpenInspectorForObjects pTarget
       break
 
-    case "move up"
-      answer "todo"
+    case "move control up"
+      _moveControlUp pTarget
       break
 
-    case "move down"
-      answer "todo"
+    case "move control down"
+      _moveControlDown pTarget
       break
 
     case "refresh children"
@@ -280,9 +293,14 @@ end _processStackAction
 
 
 private command _processCardAction pTarget, pAction
+  local tControl
+
   switch pAction
-    case "copy card"
-      copy pTarget
+    case "move card up"
+      _moveCardUp pTarget
+      break
+    case "move card down"
+      _moveCardDown pTarget
       break
   end switch
 end _processCardAction
@@ -302,7 +320,128 @@ private command _processControlAction pTarget, pAction
 end _processControlAction
 
 
-private command _pasteObjectAfterControl pObject
+private command _moveControlUp pControl
+  local tAnchorLayer, tSiblingControl
+  local tMoveControl = false
+
+  put the layer of pControl into tAnchorLayer
+  if there is a control (tAnchorLayer-1) then
+    put the long id of control (tAnchorLayer-1) into tSiblingControl
+  end if
+
+  if tSiblingControl is not empty then
+    put true into tMoveControl
+
+    if word 1 of tSiblingControl is "group" then
+      put the long id of the owner of pControl is tSiblingControl into tMoveControl
+    else if the owner of tSiblingControl is not the owner of pControl then
+      put the long id of the owner of tSiblingControl into tSiblingControl
+    end if
+  end if
+
+  if tMoveControl then
+    lock screen
+    relayer pControl before tSiblingControl
+    _refreshControlParentInView pControl
+    _selectControlRow pControl
+    unlock screen
+  else
+    beep
+  end if
+
+end _moveControlUp
+
+
+private command _moveControlDown pControl
+  local tAnchorLayer, tSiblingControl
+  local tMoveControl = false
+
+  put the layer of pControl into tAnchorLayer
+  if there is a control (tAnchorLayer+1) then
+    put the long id of control (tAnchorLayer+1) into tSiblingControl
+  end if
+
+  if tSiblingControl is not empty then
+    put the owner of tSiblingControl is the owner of pControl into tMoveControl
+  end if
+
+  if tMoveControl then
+    lock screen
+    relayer pControl after tSiblingControl
+    _refreshControlParentInView pControl
+    _selectControlRow pControl
+    unlock screen
+  else
+    beep
+  end if
+
+end _moveControlDown
+
+
+private command _moveCardDown pCard
+  if the number of pCard is not the number of cards of the owner of pCard then
+    set the number of pCard to the number of pCard + 1
+
+    lock screen
+    _refreshControlParentInView pCard
+    _selectControlRow pCard
+    unlock screen
+  else
+    beep
+  end if
+end _moveCardDown
+
+
+private command _moveCardUp pCard
+  if the number of pCard is not 1 then
+    set the number of pCard to the number of pCard - 1
+
+    lock screen
+    _refreshControlParentInView pCard
+    _selectControlRow pCard
+    unlock screen
+  else
+    beep
+  end if
+end _moveCardUp
+
+
+private command _refreshControlChildrenInView pControl
+  local tRow
+
+  put the dvRowOfId[pControl] of group "Stacks" into tRow
+  if tRow > 0 then
+    dispatch "RefreshRowChildren" to group "Stacks" with tRow
+  end if
+end _refreshControlChildrenInView
+
+
+private command _refreshControlParentInView pControl
+  local tRow, tParentRow
+
+  put the dvRowOfId[pControl] of group "Stacks" into tRow
+  if tRow > 0 then
+    put the dvRowParentRow[tRow] of group "Stacks" into tParentRow
+    if tParentRow > 0 then
+      dispatch "RefreshRowChildren" to group "Stacks" with tParentRow
+    end if
+
+  end if
+end _refreshControlParentInView
+
+
+private command _selectControlRow pControl
+  local tRow
+
+  put the dvRowOfId[pControl] of group "Stacks" into tRow
+  if tRow > 0 then
+    set the dvHilitedRow of group "Stacks" to tRow
+  end if
+
+end _selectControlRow
+
+
+private command _pasteObjectAfterControl pControl
   local tNewControl, tControlId, tParentControl, tParentRow
 
   lock screen
@@ -316,28 +455,35 @@ private command _pasteObjectAfterControl pObject
       # refresh entire tree
       break
     case "card"
-      set the index of tNewControl to the index of CardOf(pObject) + 1
-      put StackOf(pObject) into tParentControl
+      local tIndex
+
+      if word 1 of pControl is "stack" then
+        put the number of cards of pControl + 1 into tIndex
+      else
+        put CardOf(pControl) + 1 into tIndex
+      end if
+      set the number of tNewControl to tIndex
+      put StackOf(pControl) into tParentControl
       break
 
     default
       # relayer new control
-      switch word 1 of pObject
+      switch word 1 of pControl
         case "stack"
         case "card"
           # make first object
           relayer tNewControl to back of this card
-          put pObject into tParentControl
+          put pControl into tParentControl
           break
 
         case "group"
-          relayer tNewControl to back of pObject
-          put pObject into tParentControl
+          relayer tNewControl to back of pControl
+          put pControl into tParentControl
           break
 
         default
-          relayer tNewControl after pObject
-          put the long id of the owner of pObject into tParentControl
+          relayer tNewControl after pControl
+          put the long id of the owner of pControl into tParentControl
           break
       end switch
   end switch
