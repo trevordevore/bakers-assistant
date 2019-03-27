@@ -178,6 +178,8 @@ command DisplayActionMenu pObject
           "Cut Control/|cut control" & cr & \
           _enableMenuLine("Paste Object/|paste object", "objects" is among the keys of the clipboarddata) & cr & \
           "-" & cr & \
+          "Refresh owner controls/|refresh owner" & cr & \
+          "-" & cr & \
           "Move Up/|move control up" & cr & \
           "Move Down/|move control down" into tMenu
       break
@@ -321,7 +323,9 @@ end _processGroupAction
 
 private command _processControlAction pTarget, pAction
   switch pAction
-
+    case "refresh owner"
+      _refreshControlParentInView pTarget
+      break
   end switch
 end _processControlAction
 
