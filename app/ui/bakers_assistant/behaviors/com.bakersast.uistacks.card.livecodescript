@@ -363,7 +363,9 @@ private command _moveControlDown pControl
   local tMoveControl = false
 
   put the layer of pControl into tAnchorLayer
-  if there is a control (tAnchorLayer+1) of CardOf(pControl) then
+  if word 1 of pControl is "group" then
+    put _nextGroupSibling(pControl) into tSiblingControl
+  else if there is a control (tAnchorLayer+1) of CardOf(pControl) then
     put the long id of control (tAnchorLayer+1) of CardOf(pControl) into tSiblingControl
   end if
 
@@ -410,6 +412,26 @@ private command _moveCardUp pCard
     beep
   end if
 end _moveCardUp
+
+
+/**
+Summary: Returns the next control on the card that is a sibling of a group.
+
+Returns: nothing
+*/
+private function _nextGroupSibling pControl
+  local tCard, tOwner
+
+  put CardOf(pControl) into tCard
+  put the long id of the owner of pControl into tOwner
+
+  repeat with i = the layer of pControl + 1 to the number of controls of tCard
+    if the long id of the owner of control i of tCard is tOwner then
+      return the long id of control i of tCard
+    end if
+  end repeat
+  return empty
+end _nextGroupSibling
 
 
 private command _refreshControlChildrenInView pControl
