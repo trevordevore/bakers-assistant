@@ -228,12 +228,8 @@ command ProcessSelectedAction pTarget, pAction
       break
 
     case "paste object"
-      if word 1 of pTarget is "stack" then
-        go pTarget
-      else
-        go CardOf(pTarget)
-      end if
-      _pasteObjectAfterControl pTarget
+      # Process in time in case entire DataView is redrawn
+      send "_processPasteObject pTarget" to me in 0 seconds
       break
 
     case "open property inspector"
@@ -272,6 +268,16 @@ command ProcessSelectedAction pTarget, pAction
       break
   end switch
 end ProcessSelectedAction
+
+
+command _processPasteObject pControl
+  if word 1 of pControl is "stack" then
+    go pControl
+  else
+    go CardOf(pControl)
+  end if
+  _pasteObjectAfterControl pControl
+end _processPasteObject
 
 
 private command _processStackAction pTarget, pAction
@@ -443,12 +449,18 @@ end _selectControlRow
 
 private command _pasteObjectAfterControl pControl
   local tNewControl, tControlId, tParentControl, tParentRow
+  local tDefaultStack
 
   lock screen
   select empty
   paste
   put it into tNewControl
   put the short id of tNewControl into tControlId
+
+  # Make sure this stack is target after a paste occurs.
+  # Pasting a stack would change the defaultStack.
+  put the defaultStack into tDefaultStack
+  set the defaultStack to the short name of the owner of me
 
   switch word 1 of tNewControl
     case "stack"
@@ -504,6 +516,8 @@ private command _pasteObjectAfterControl pControl
   end if
 
   unlock screen
+
+  set the defaultStack to tDefaultStack
 end _pasteObjectAfterControl
 
 
