@@ -1,4 +1,4 @@
-﻿script "com.bakersast.stack"
+script "com.bakersast.stack"
 
 on saveStackRequest
   local tCardId
@@ -27,6 +27,36 @@ on preOpenStack
     exit to top
   end try
 end preOpenStack
+
+
+/**
+Summary: Prompts the user to save the stack in the plugins folder.
+
+Description:
+If the user opens this stack using `go stack URL` then it won't have a filename.
+This handler will ask the user to save the stack in the user plugins folder
+in such a case.
+
+Returns: nothing
+*/
+on openStack
+  if the environment is "development" and the filename of me is empty \
+        and revEnvironmentUserPluginsPath() is not empty and there is a folder revEnvironmentUserPluginsPath() then
+    answer "Would you like to save this plugin to your LiveCode plugins folder?" with "Save Plugin" or "No"
+    if it is "save plugin" then
+      local tError
+
+      save me as (revEnvironmentUserPluginsPath() & "/bakers_assistant_plugin.livecode")
+      put the result into tError
+
+      if tError is empty then
+        dispatch "preOpenCard" to this card
+      else
+        answer error "Error saving plugin:" && tError && "(" && sysError() & ")."
+      end if
+    end if
+  end if
+end openStack
 
 
 command ResizeGlobalControls
