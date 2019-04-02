@@ -67,6 +67,8 @@ private command PopulateUITypesMenu
     put cr & "Embeddable Views" after tMenu
   end if
 
+  put cr & "Open Stacks" after tMenu
+
   set the text of button "UIType" to tMenu
 end PopulateUITypesMenu
 
@@ -565,7 +567,18 @@ private function createRootStackNodes
   -- key
   -- name
   -- encrypt
-  put SortArrayByKey(levureGetUIStacks(tUIKey), "name") into tStacksA
+  if tUIKey is "open stacks" then
+    local tStack, i
+
+    repeat for each line tStack in the openstacks
+      if not filterOutStack(tStack) then
+        add 1 to i
+        put tStack into tStacksA[i]["name"]
+      end if
+    end repeat
+  else
+    put SortArrayByKey(levureGetUIStacks(tUIKey), "name") into tStacksA
+  end if
 
   repeat for each element tStackA in tStacksA
     put empty into tNodeA
@@ -700,6 +713,20 @@ private function _correctCardIdInBackgoundGroups pControl, pReferenceControl
   put replacetext(pControl, "card id ([0-9]+)", "card id" && tCardId) into pControl
   return pControl
 end _correctCardIdInBackgoundGroups
+
+
+/**
+Summary: Determines if a stack should be filtered out of the open stacks listing.
+
+Returns: Boolean
+*/
+private function filterOutStack pStackName
+  return pStackName is the short name of the owner of me or \
+        not the visible of stack pStackName or \
+        pStackName begins with "rev" or \
+        pStackName begins with "com.livecode." or \
+        pStackName is "Message Box"
+end filterOutStack
 
 
 setProp uIsNodeExpanded[pNodeId] pBoolean
