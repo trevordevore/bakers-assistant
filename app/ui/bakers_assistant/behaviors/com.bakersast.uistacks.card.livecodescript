@@ -120,10 +120,48 @@ command uiPreviewControl pControl
 end uiPreviewControl
 
 
+command uiGoToControl pControl
+  if there is a pControl then
+    switch word 1 of pControl
+      case "card"
+      case "stack"
+        go pControl
+        break
+      default
+        go CardOf(pControl)
+        select pControl
+    end switch
+  else
+    _alertUserOfDeletedControl pControl
+  end if
+end uiGoToControl
+
+
+command uiAlertUserOfDeletedControl pControl
+  _alertUserOfDeletedControl pControl
+end uiAlertUserOfDeletedControl
+
+
+private command _alertUserOfDeletedControl pControl
+  answer error "The control no longer exists. Would you like to refresh the tree?" with "No" or "Yes"
+  if it is "Yes" then
+    _refreshFirstExistingParentInView pControl
+  end if
+end _alertUserOfDeletedControl
+
+
 command DisplayActionMenu pObject
   local tMenu
 
+  # Don't show menu if object doesn't exist
+  if there is not a pObject then
+    put empty into pObject
+  end if
+
   switch word 1 of pObject
+    case ""
+      put "(Object no longer exists" into tMenu
+      break
     case "stack"
       put "Open/|open" & cr & \
           "Open Property Inspector/|open property inspector" & cr & \
@@ -459,9 +497,41 @@ private command _refreshControlParentInView pControl
     if tParentRow > 0 then
       dispatch "RefreshRowChildren" to group "Stacks" with tParentRow
     end if
-
   end if
 end _refreshControlParentInView
+
+
+private command _refreshFirstExistingParentInView pControl
+  local tRow, tParentRow
+  local tRefreshEntireTree = "false"
+
+  put the dvRowOfId[pControl] of group "Stacks" into tRow
+
+  repeat forever
+    if tRow > 0 then
+      put the dvRowParentRow[tRow] of group "Stacks" into tParentRow
+      if tParentRow > 0 then
+        put the dvRowId[tParentRow] of group "Stacks" into pControl
+        if there is a pControl then
+          dispatch "RefreshRowChildren" to group "Stacks" with tParentRow
+          exit repeat
+        else
+          put tParentRow into tRow
+        end if
+      else
+        put true into tRefreshEntireTree
+      end if
+    else
+      put true into tRefreshEntireTree
+    end if
+
+    if tRefreshEntireTree then
+      # refresh entire view
+      PopulateUIStacks
+      exit repeat
+    end if
+  end repeat
+end _refreshFirstExistingParentInView
 
 
 private command _selectControlRow pControl

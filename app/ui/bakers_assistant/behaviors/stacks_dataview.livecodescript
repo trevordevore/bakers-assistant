@@ -1,4 +1,4 @@
-﻿script "com.bakersast.dataview.stacks" with behavior "DataView Tree Behavior"
+script "com.bakersast.dataview.stacks" with behavior "DataView Tree Behavior"
 
 
 on selectedRowChanged pRow, pPreviousRow
@@ -12,8 +12,7 @@ command ToggleRow pRow
   put the dvRowId[pRow] of me into tRowId
 
   if there is not a tRowId then
-    answer "Control no longer exists:" && tRowId
-    RefreshRowChildren the dvRowParentRow[pRow] of me
+    uiAlertUserOfDeletedControl tRowId
     return empty
   end if
 
@@ -88,15 +87,7 @@ on mouseDoubleUp pBtnNum
 
   if pBtnNum is 1 and the dvRowControl of the target is not empty then
     put the uSelectedControlId of me into tControl
-    switch word 1 of tControl
-      case "card"
-      case "stack"
-        go tControl
-        break
-      default
-        go CardOf(tControl)
-        select tControl
-    end switch
+    uiGoToControl tControl
   end if
 end mouseDoubleUp
 
