@@ -175,7 +175,9 @@ command DisplayActionMenu pObject
           "Reveal stack file/|reveal stack file" into tMenu
 
       if the selectedText of button "UIType" is "Embeddable Views" then
-        put cr & "Add View to Current Card/|insert embeddable view" after tMenu
+        put cr & "-" after tMenu
+        put cr & _enableMenuLine("Add View to Current Card/|add embeddable view to card", the topstack is not empty) after tMenu
+        put cr & _enableMenuLine("Add View to Current Group/|add embeddable view to selected group", word 1 of the selectedObject is "group") after tMenu
       end if
       break
 
@@ -333,8 +335,12 @@ private command _processStackAction pTarget, pAction
       launch document item 1 to -2 of the effective filename of pTarget
       break
 
-    case "insert embeddable view"
-      uiInsertEmbeddableViewIntoTopStack the short name of pTarget
+    case "add embeddable view to card"
+      uiInsertEmbeddableView the short name of pTarget, the long id of this card of the topstack
+      break
+
+    case "add embeddable view to selected group"
+      uiInsertEmbeddableView the short name of pTarget, the long id of the selectedObject
       break
   end switch
 end _processStackAction
@@ -619,14 +625,14 @@ private command _pasteObjectAfterControl pControl
 end _pasteObjectAfterControl
 
 
-command uiInsertEmbeddableViewIntoTopStack pStackShortName
+command uiInsertEmbeddableView pStackShortName, pTargetObject
   local tViewKind
 
-  if the topstack is not empty then
+  if there is a pTargetObject then
     put pStackShortName into tViewKind
-    embedViewsCreateViewInstance tViewKind, the long id of this card of the topstack
+    embedViewsCreateViewInstance tViewKind, pTargetObject
   end if
-end uiInsertEmbeddableViewIntoTopStack
+end uiInsertEmbeddableView
 
 
 private function createRootStackNodes
