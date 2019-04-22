@@ -585,10 +585,15 @@ private command _pasteObjectAfterControl pControl
     default
       # relayer new control
       switch word 1 of pControl
-        case "stack"
+         case "stack"
+          # make first object
+          relayer tNewControl to back of this card of pControl
+          put pControl into tParentControl
+          break
+
         case "card"
           # make first object
-          relayer tNewControl to back of this card
+          relayer tNewControl to back of pControl
           put pControl into tParentControl
           break
 
