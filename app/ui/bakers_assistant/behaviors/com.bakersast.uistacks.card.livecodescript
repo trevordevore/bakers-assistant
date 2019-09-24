@@ -635,7 +635,7 @@ command uiInsertEmbeddableView pStackShortName, pTargetObject
 
   if there is a pTargetObject then
     put pStackShortName into tViewKind
-    embedViewsCreateViewInstance tViewKind, pTargetObject
+    embedViewsCreateViewInstance tViewKind, tViewKind, pTargetObject
   end if
 end uiInsertEmbeddableView
 
