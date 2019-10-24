@@ -157,10 +157,17 @@ end _alertUserOfDeletedControl
 
 
 command DisplayActionMenu pObject, pEmbeddableViewKind
+  local tMenu, tShowHideOption
 
   # Don't show menu if object doesn't exist
   if there is not a pObject then
     put empty into pObject
+  end if
+
+  if the visible of pObject then
+    put "Hide Control/|hide control" into tShowHideOption
+  else
+    put "Show Control/|show control" into tShowHideOption
   end if
 
   switch word 1 of pObject
@@ -190,8 +197,9 @@ command DisplayActionMenu pObject, pEmbeddableViewKind
       put "Open/|open" & cr & \
           "Open Property Inspector/|open property inspector" & cr & \
           "-" & cr & \
-          "Copy Long ID/|copy long id" & cr & \
           "Copy Card/|copy card" & cr & \
+          "Copy Name/|copy name" & cr & \
+          "Copy Long ID/|copy long id" & cr & \
           "Cut Card/|cut card" & cr & \
           _enableMenuLine("Paste Object/|paste object", "objects" is among the keys of the clipboarddata) & cr & \
           "-" & cr & \
@@ -205,8 +213,11 @@ command DisplayActionMenu pObject, pEmbeddableViewKind
       put "Select/|select" & cr & \
           "Open Property Inspector/|open property inspector" & cr & \
           "-" & cr & \
-          "Copy Long ID/|copy long id" & cr & \
+          tShowHideOption & cr & \
+          "-" & cr & \
           "Copy Group/|copy control" & cr & \
+          "Copy Name/|copy name" & cr & \
+          "Copy Long ID/|copy long id" & cr & \
           "Cut Group/|cut control" & cr & \
           _enableMenuLine("Paste Object/|paste object", "objects" is among the keys of the clipboarddata) & cr & \
           "-" & cr & \
@@ -224,8 +235,11 @@ command DisplayActionMenu pObject, pEmbeddableViewKind
       put "Select/|select" & cr & \
           "Open Property Inspector/|open property inspector" & cr & \
           "-" & cr & \
-          "Copy Long ID/|copy long id" & cr & \
+          tShowHideOption & cr & \
+          "-" & cr & \
           "Copy Control/|copy control" & cr & \
+          "Copy Name/|copy name" & cr & \
+          "Copy Long ID/|copy long id" & cr & \
           "Cut Control/|cut control" & cr & \
           _enableMenuLine("Paste Object/|paste object", "objects" is among the keys of the clipboarddata) & cr & \
           "-" & cr & \
@@ -259,6 +273,10 @@ command ProcessSelectedAction pTarget, pAction
       set the clipboarddata to pTarget
       break
 
+    case "copy name"
+      set the clipboarddata to the name of pTarget
+      break
+
     case "open"
       go pTarget
       break
@@ -266,6 +284,14 @@ command ProcessSelectedAction pTarget, pAction
     case "select"
       go CardOf(pTarget)
       select pTarget
+      break
+
+    case "show control"
+      show pTarget
+      break
+
+    case "hide control"
+      hide pTarget
       break
 
     case "copy card"
