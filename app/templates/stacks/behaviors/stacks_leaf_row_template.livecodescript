@@ -77,7 +77,7 @@ graphic (assuming the graphic exists). If you need to customize the hilite
 behavior then do so here.
 */
 setProp dvHilite[pHiliteColor] pBoolean
-
+  dispatch "RenderTreeLines" to image "TreeLines" of me with the dvRow of me, "150,150,150"
 end dvHilite
 
 

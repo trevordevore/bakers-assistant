@@ -22,9 +22,9 @@ on FillInData pDataA, pRow
   set the tooltip of field "Label" of me to pDataA["tooltip"]
 
   if pDataA["expanded"] then
-    set the iconPath of widget "Toggle" of me to the uExpandedIconPath of the dvControl of me
+    set the icon of button "Toggle" of me to 4009
   else
-    set the iconPath of widget "Toggle" of me to the uCollapsedIconPath of the dvControl of me
+    set the icon of button "Toggle" of me to 4010
   end if
   if pDataA["type"] is "group" then
     if not the selectGroupedControls of pDataA["id"] then
@@ -32,7 +32,7 @@ on FillInData pDataA, pRow
     end if
   end if
 
-  set the foregroundColor of widget "Toggle" of me to tExpandColor
+  set the foregroundColor of button "Toggle" of me to tExpandColor
 end FillInData
 
 
@@ -57,12 +57,12 @@ on LayoutControl pControlRect
   put the dvRowLevel[the dvRow of me] of me - 1 into tLevel
   put tLevel * 15 into tInset
 
-  set the left of widget "Toggle" of me to item 1 of pControlRect + 7 + tInset
+  set the left of button "Toggle" of me to item 1 of pControlRect + 7 + tInset
 
   set the right of widget "ActionMenu" of me to item 3 of pControlRect - 10
 
   put the rect of field "Label" of me into tRect
-  put the right of widget "Toggle" of me into item 1 of tRect
+  put the right of button "Toggle" of me into item 1 of tRect
   put the left of widget "ActionMenu" of me - 10 into item 3 of tRect
   set the rect of field "Label" of me to tRect
 
@@ -101,7 +101,7 @@ graphic (assuming the graphic exists). If you need to customize the hilite
 behavior then do so here.
 */
 setProp dvHilite[pHiliteColor] pBoolean
-
+  dispatch "RenderTreeLines" to image "TreeLines" of me with the dvRow of me, "150,150,150"
 end dvHilite
 
 
