@@ -90,8 +90,6 @@ command uiPreviewControl pControl
     return empty
   end if
 
-  lock screen
-
   show field "Preview"
 
   if word 1 of pControl is "stack" then
@@ -100,9 +98,16 @@ command uiPreviewControl pControl
 
   put StackOf(pControl) into tStack
 
+  send "RenderPreviewOfControl tStack, pControl" to me in 10 milliseconds
+end uiPreviewControl
+
+
+command RenderPreviewOfControl pStack, pControl
   local tScreenNo, tPixelScale, tWidth, tHeight
 
-  put the screen of tStack into tScreenNo
+  lock screen
+
+  put the screen of pStack into tScreenNo
   put line tScreenNo of the screenPixelScales into tPixelScale
   put the width of pControl * tPixelScale into tWidth
   put the height of pControl * tPixelScale into tHeight
@@ -112,12 +117,13 @@ command uiPreviewControl pControl
     set the uPixelScale of image "Preview" to tPixelScale
     export snapshot from pControl at size tWidth,tHeight to image "Preview" as PNG
     _resizePreview
+    hide field "Preview"
   else
     set the text of image "Preview" to empty
   end if
-  hide field "Preview"
+
   unlock screen
-end uiPreviewControl
+end RenderPreviewOfControl
 
 
 command uiGoToControl pControl
