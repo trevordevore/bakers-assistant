@@ -37,9 +37,6 @@ templates:
   - folder: ./templates
 libraries:
   - folder: ./libraries
-  - filename: /Users/trevordevore/Development/screensteps-4/app/libraries/animationEngine.livecode
-  - filename: /Users/trevordevore/Development/screensteps-4/app/libraries/dataHelpers.livecodescript
-  - filename: /Users/trevordevore/Development/screensteps-4/app/libraries/system.livecodescript
 frontscripts:
   - folder: ./frontscripts
 backscripts:
