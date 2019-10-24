@@ -164,10 +164,13 @@ command DisplayActionMenu pObject, pEmbeddableViewKind
     put empty into pObject
   end if
 
-  if the visible of pObject then
-    put "Hide Control/|hide control" into tShowHideOption
-  else
-    put "Show Control/|show control" into tShowHideOption
+
+  if word 1 of pObject is not among the items of "stack,card" then
+    if the visible of pObject then
+      put "Hide Control/|hide control" into tShowHideOption
+    else
+      put "Show Control/|show control" into tShowHideOption
+    end if
   end if
 
   switch word 1 of pObject
