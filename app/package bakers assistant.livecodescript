@@ -20,6 +20,16 @@ command PackageBakersAssistant pBuildProfile
     set the mainstack of stack tStackA["filename"] to tMainStack
   end repeat
 
+  ## Merge in libraries
+  local tMainScript
+
+  put the script of stack tMainStack into tMainScript
+  put levureAppGet("libraries") into tStacksA
+  repeat for each element tStackA in tStacksA
+    put cr & the script of stack tStackA["filename"] after tMainScript
+  end repeat
+  set the script of stack tMainStack to tMainScript
+
   put levureAppGet("version") & "-" & levureAppGet("build") into tSubFolder
   put levureBuildFolder() & "/" & pBuildProfile & "/" & tSubFolder into tBuildFolder
 
