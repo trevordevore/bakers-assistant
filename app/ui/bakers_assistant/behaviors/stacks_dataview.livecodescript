@@ -55,8 +55,7 @@ command DataForNode pNodeA, pRow, @rDataA, @rTemplate
   put rDataA["type"] is "stack" and the selectedText of button "UIType" is "Embeddable Views" \
         into rDataA["can insert"]
 
-  put rDataA["type"] is "group" and the uEmbeddableViewKind of rDataA["id"] is not empty \
-        into rDataA["is embeddable view"]
+  put the uEmbeddableViewKind of rDataA["id"] into rDataA["embeddable view kind"]
 
   try
     put the long name of rDataA["id"] into tTooltip

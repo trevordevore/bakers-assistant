@@ -1,4 +1,7 @@
 ﻿script "Stacks expandable Row Template Behavior"
+
+local sEmbeddableViewKind
+
 /**
 Summary: Fill in the controls in the row group with the data associated with the row.
 
@@ -11,10 +14,12 @@ Returns: nothing
 on FillInData pDataA, pRow
   local tLabel, tExpandColor
 
+  put pDataA["embeddable view kind"] into sEmbeddableViewKind
+
   put "80,80,80" into tExpandColor
 
   put pDataA["control name"] into tLabel
-  if pDataA["is embeddable view"] then
+  if pDataA["embeddable view kind"] is not empty then
     put " [embedded]" after tLabel
   end if
 
@@ -111,7 +116,7 @@ on mouseDown pBtnNum
   if pBtnNum is 1 then
     switch the short name of the target
       case "ActionMenu"
-        DisplayActionMenu the dvRowId[the dvRow of me] of me
+        DisplayActionMenu the dvRowId[the dvRow of me] of me, sEmbeddableViewKind
         break
     end switch
   end if

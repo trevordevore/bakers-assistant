@@ -150,8 +150,7 @@ private command _alertUserOfDeletedControl pControl
 end _alertUserOfDeletedControl
 
 
-command DisplayActionMenu pObject
-  local tMenu
+command DisplayActionMenu pObject, pEmbeddableViewKind
 
   # Don't show menu if object doesn't exist
   if there is not a pObject then
@@ -209,6 +208,10 @@ command DisplayActionMenu pObject
           "-" & cr & \
           "Move Up/|move control up" & cr & \
           "Move Down/|move control down" into tMenu
+
+          if pEmbeddableViewKind is not empty then
+            put cr & "Open Embeddable View/|open embeddable view" after line 2 of tMenu
+          end if
       break
 
     default
@@ -362,7 +365,9 @@ end _processCardAction
 
 private command _processGroupAction pTarget, pAction
   switch pAction
-
+  case "open embeddable view"
+    go stack (the uEmbeddableViewKind of pTarget)
+    break
   end switch
 end _processGroupAction
 
