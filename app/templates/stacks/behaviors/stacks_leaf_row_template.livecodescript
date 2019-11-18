@@ -112,3 +112,15 @@ on mouseUp pBtnNum
 
   pass mouseUp
 end mouseUp
+
+
+on mouseDoubleUp pBtnNum
+  if pBtnNum is 1 then
+    if IsThisModifierSetActive("option") then
+      local tCtrl
+      put the dvRowId[the dvRow of me] of me into tCtrl
+      set the visible of tCtrl to not the visible of tCtrl
+    end if
+  end if
+
+end mouseDoubleUp
