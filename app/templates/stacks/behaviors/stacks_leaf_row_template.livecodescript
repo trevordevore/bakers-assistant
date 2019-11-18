@@ -87,8 +87,28 @@ on mouseDown pBtnNum
   if pBtnNum is 1 then
     switch the short name of the target
       case "ActionMenu"
-        DisplayActionMenu the dvRowId[the dvRow of me] of me
+        if the platform is "macos" then
+          DisplayActionMenu the dvRowId[the dvRow of me] of me
+        end if
         break
     end switch
   end if
 end mouseDown
+
+
+on mouseUp pBtnNum
+  if pBtnNum is 1 then
+    switch the short name of the target
+      case "ActionMenu"
+        # LC on Windows (probably Linux too) works best if menus are shown during mouseUp
+        if the platform is not "macos" then
+          dvMouseUp pBtnNum
+          DisplayActionMenu the dvRowId[the dvRow of me] of me
+          exit mouseUp
+        end if
+        break
+    end switch
+  end if
+
+  pass mouseUp
+end mouseUp
