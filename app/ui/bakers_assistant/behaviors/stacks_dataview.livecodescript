@@ -56,7 +56,12 @@ command RefreshRowChildren pRow
 
   put createNodesForControlChildren(the dvRowId[pRow] of me) into tNodesA
   set the dvRowChildren[pRow] of me to tNodesA
+
+  lock screen
   RefreshViewRows
+  # Update preview
+  selectedRowChanged the dvHilitedRows of me
+  unlock screen
 end RefreshRowChildren
 
 
