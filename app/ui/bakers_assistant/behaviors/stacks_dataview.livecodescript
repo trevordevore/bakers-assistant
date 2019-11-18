@@ -32,8 +32,12 @@ command ToggleRow pRow
     if word 1 of the dvRowId[pRow] of me is among the items of "stack,card,group" then
       if the number of elements of tNodesA is 1 \
             and word 1 of tNodesA[1]["id"] is among the items of "stack,card,group" then
-        put createNodesForControlChildren(tNodesA[1]["id"]) into tNodesA[1]["children"]
-        set the uIsNodeExpanded[tNodesA[1]["id"]] of this card to true
+
+        if not the uIsNodeExpanded[tNodesA[1]["id"]] of this stack then
+          put createNodesForControlChildren(tNodesA[1]["id"]) into tNodesA[1]["children"]
+          set the uIsNodeExpanded[tNodesA[1]["id"]] of this card to true
+        end if
+
         put 1 into tLevelsDown
       end if
     end if
