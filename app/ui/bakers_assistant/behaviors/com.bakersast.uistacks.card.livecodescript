@@ -105,6 +105,8 @@ end uiPreviewControl
 command RenderPreviewOfControl pStack, pControl
   local tScreenNo, tPixelScale, tWidth, tHeight
 
+  if there is not a pControl then return empty
+
   lock screen
 
   put the screen of pStack into tScreenNo
