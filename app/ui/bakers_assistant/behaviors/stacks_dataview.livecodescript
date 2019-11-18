@@ -23,10 +23,24 @@ command ToggleRow pRow
     set the uIsNodeExpanded[tRowId] of this card to false
   else
     local tNodesA
+    local tLevelsDown = 0
 
     put createNodesForControlChildren(tRowId) into tNodesA
+
+    # For stacks, cards, or groups with a single card expand the card children
+    # For cards with a single group expand the group children
+    if word 1 of the dvRowId[pRow] of me is among the items of "stack,card,group" then
+      if the number of elements of tNodesA is 1 \
+            and word 1 of tNodesA[1]["id"] is among the items of "stack,card,group" then
+        put createNodesForControlChildren(tNodesA[1]["id"]) into tNodesA[1]["children"]
+        set the uIsNodeExpanded[tNodesA[1]["id"]] of this card to true
+        put 1 into tLevelsDown
+      end if
+    end if
+
     set the dvRowChildren[pRow] of me to tNodesA
-    SetRowIsExpanded pRow, empty, true
+
+    SetRowIsExpanded pRow, tLevelsDown, true
 
     set the uIsNodeExpanded[tRowId] of this card to true
   end if
