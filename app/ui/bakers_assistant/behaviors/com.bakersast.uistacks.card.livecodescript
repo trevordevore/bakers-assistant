@@ -858,3 +858,8 @@ setProp uIsNodeExpanded[pNodeId] pBoolean
   end if
 end uIsNodeExpanded
 
+
+getProp uIsNodeExpanded[pNodeId]
+  return sNodeExpandedCacheA[pNodeId] is true
+end uIsNodeExpanded
+
