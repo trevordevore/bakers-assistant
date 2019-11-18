@@ -78,9 +78,9 @@ command DataForNode pNodeA, pRow, @rDataA, @rTemplate
   put rDataA["type"] is "stack" and the selectedText of button "UIType" is "Embeddable Views" \
         into rDataA["can insert"]
 
-  put the uEmbeddableViewKind of rDataA["id"] into rDataA["embeddable view kind"]
-
   try
+    put the uEmbeddableViewKind of rDataA["id"] into rDataA["embeddable view kind"]
+
     put the long name of rDataA["id"] into tTooltip
     if word 1 of rDataA["id"] is not "stack" then
       put cr & "id:" && the short id of rDataA["id"] after tTooltip
@@ -90,8 +90,12 @@ command DataForNode pNodeA, pRow, @rDataA, @rTemplate
       put cr & "   behavior:" && tBehavior && "[" & the long name of tBehavior & "]" after tTooltip
       put the behavior of tBehavior into tBehavior
     end repeat
+
+    put true into rDataA["control exists"]
   catch e
     # control may no longer exist
+    put false into rDataA["control exists"]
+    put "Control no longer exists" into rDataA["control name"]
     put e
   end try
   put tTooltip into rDataA["tooltip"]
