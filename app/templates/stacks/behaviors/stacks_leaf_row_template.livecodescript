@@ -120,7 +120,9 @@ on mouseDoubleUp pBtnNum
       local tCtrl
       put the dvRowId[the dvRow of me] of me into tCtrl
       set the visible of tCtrl to not the visible of tCtrl
+      exit mouseDoubleUp
     end if
   end if
 
+  pass mouseDoubleUp
 end mouseDoubleUp
