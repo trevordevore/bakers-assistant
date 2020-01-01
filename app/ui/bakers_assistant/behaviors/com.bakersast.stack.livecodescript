@@ -13,6 +13,8 @@ on saveStackRequest
   set the hilitedItemNames of widget "Navigation" to "UI Stacks"
   unlock messages
 
+  set the title of this stack to "Baker's Assistant [" & levureAppGet("version") & " build" & levureAppGet("build") & "]"
+
   pass saveStackRequest
 end saveStackRequest
 
