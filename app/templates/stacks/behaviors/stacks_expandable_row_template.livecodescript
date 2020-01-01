@@ -12,11 +12,11 @@ pRow: The row number that this row control is associated with.
 Returns: nothing
 */
 on FillInData pDataA, pRow
-  local tLabel, tExpandColor
+  local tLabel, tLabelColor
 
   put pDataA["embeddable view kind"] into sEmbeddableViewKind
 
-  put "80,80,80" into tExpandColor
+  put "0,0,0" into tLabelColor
 
   put pDataA["control name"] into tLabel
   if pDataA["embeddable view kind"] is not empty then
@@ -31,13 +31,13 @@ on FillInData pDataA, pRow
   else
     set the icon of button "Toggle" of me to 4010
   end if
-  if pDataA["type"] is "group" then
+  if pDataA["control exists"] and pDataA["type"] is "group" then
     if not the selectGroupedControls of pDataA["id"] then
-      put "150,150,150" into tExpandColor
+      put "150,150,150" into tLabelColor
     end if
   end if
 
-  set the foregroundColor of button "Toggle" of me to tExpandColor
+  set the textColor of field "Label" of me to tLabelColor
 end FillInData
 
 
