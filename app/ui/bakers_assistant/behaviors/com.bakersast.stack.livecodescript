@@ -13,7 +13,7 @@ on saveStackRequest
   set the hilitedItemNames of widget "Navigation" to "UI Stacks"
   unlock messages
 
-  set the title of this stack to "Baker's Assistant [" & levureAppGet("version") & " build" & levureAppGet("build") & "]"
+  set the title of this stack to "Baker's Assistant"
 
   pass saveStackRequest
 end saveStackRequest
@@ -23,6 +23,7 @@ on preOpenStack
   try
     local tStacksA
     put levureGetUIStacks() into tStacksA
+    set the title of this stack to "Baker's Assistant [" & levureAppGet("version") & " build" & levureAppGet("build") & "]"
   catch tError
     answer "The Levure framework is not currently loaded. Please load a Levure application and then open the plugin again."
     close this stack
