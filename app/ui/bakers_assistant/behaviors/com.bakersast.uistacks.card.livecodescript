@@ -313,7 +313,9 @@ command ProcessSelectedAction pTarget, pAction
 
     case "paste object"
       # Process in time in case entire DataView is redrawn
-      send "_processPasteObject pTarget" to me in 0 seconds
+      local tIsExpanded
+      put the dvNodeIsExpanded[pTarget] of group "Stacks" into tIsExpanded
+      send "_processPasteObject pTarget, tIsExpanded" to me in 0 seconds
       break
 
     case "open property inspector"
@@ -354,13 +356,13 @@ command ProcessSelectedAction pTarget, pAction
 end ProcessSelectedAction
 
 
-command _processPasteObject pControl
+command _processPasteObject pControl, pIsExpanded
   if word 1 of pControl is "stack" then
     go pControl
   else
     go CardOf(pControl)
   end if
-  _pasteObjectAfterControl pControl
+  _pasteObjectAfterControl pControl, pIsExpanded
 end _processPasteObject
 
 
@@ -593,7 +595,7 @@ private command _selectControlRow pControl
 end _selectControlRow
 
 
-private command _pasteObjectAfterControl pControl
+private command _pasteObjectAfterControl pControl, pIsExpanded
   local tNewControl, tControlId, tParentControl, tParentRow
   local tDefaultStack
 
@@ -640,8 +642,13 @@ private command _pasteObjectAfterControl pControl
           break
 
         case "group"
-          relayer tNewControl to back of pControl
-          put pControl into tParentControl
+          if pIsExpanded then
+            relayer tNewControl to back of pControl
+            put pControl into tParentControl
+          else
+            relayer tNewControl after pControl
+            put the long id of the owner of pControl into tParentControl
+          end if
           break
 
         default
