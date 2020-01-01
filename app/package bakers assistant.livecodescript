@@ -41,6 +41,7 @@ command PackageBakersAssistant pBuildProfile
   stop using packagerFilename()
 
   if tError is empty then
+    set the title of stack tMainStack to "Baker's Assistant [" & levureAppGet("version") && "build" && levureAppGet("build") & "]"
     save stack tMainStack as tBuildFolder & "/bakers_assistant_plugin.livecode"
   end if
 
