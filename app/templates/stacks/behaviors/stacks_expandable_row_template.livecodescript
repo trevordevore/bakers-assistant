@@ -37,6 +37,8 @@ on FillInData pDataA, pRow
     end if
   end if
 
+  set the enabled of widget "ActionMenu" of me to pDataA["control exists"]
+
   set the textColor of field "Label" of me to tLabelColor
 end FillInData
 

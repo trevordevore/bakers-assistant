@@ -11,6 +11,8 @@ Returns: nothing
 on FillInData pDataA, pRow
   set the text of field "Label" of me to pDataA["control name"]
   set the tooltip of field "Label" of me to pDataA["tooltip"]
+
+  set the enabled of widget "ActionMenu" of me to pDataA["control exists"]
 end FillInData
 
 
