@@ -2,6 +2,7 @@
 
 command _resetUI
   set the dvData of group "Helpers" to empty
+  set the text of field "HelperConfig" to empty
 end _resetUI
 
 
@@ -20,8 +21,9 @@ on resizeStack pWidth, pHeight
   ResizeGlobalControls
 
   set the topleft of field "LblHeading" to 20,the bottom of group "NavigationControls" + 20
+  set the rect of field "HelperConfig" to 20, pHeight - 150, pWidth-20, pHeight - 20
 
-  set the rect of group "Helpers" to 20,the bottom of field "LblHeading" + 8, pWidth-20, pHeight-20
+  set the rect of group "Helpers" to 20,the bottom of field "LblHeading" + 8, pWidth-20, the top of field "HelperConfig" - 8
 end resizeStack
 
 
@@ -33,6 +35,11 @@ command PopulateHelpers
 end PopulateHelpers
 
 
+/**
+Summary: Sort helpers by name.
+
+Returns: Array of helpers sorted by name.
+*/
 private function sortedHelpers
   local tHelpersA, tSortedHelpersA, tHelperA, tKeys, i
 
@@ -58,3 +65,24 @@ private function sortedHelpers
 
   return tSortedHelpersA
 end sortedHelpers
+
+
+/**
+Summary: Displays the contents of a Helper's helper.yml file.
+
+Returns: nothing
+*/
+command DisplayHelperConfig pFolder
+  local tConfigFilename, tText
+
+  put pFolder & "/helper.yml" into tConfigFilename
+
+  if there is a file tConfigFilename then
+    put URL("binfile:" & tConfigFilename) into tText
+    put textDecode(tText, "utf8") into tText
+  else
+    put "helper.yml file not found for `" & tConfigFilename & "`" into tText
+  end if
+
+  set the text of field "HelperConfig" to tText
+end DisplayHelperConfig
