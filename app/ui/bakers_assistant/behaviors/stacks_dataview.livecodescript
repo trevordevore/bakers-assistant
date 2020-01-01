@@ -90,16 +90,18 @@ command DataForNode pNodeA, pRow, @rDataA, @rTemplate
   end if
 
   # Behavior information
-  put the behavior of rDataA["id"] into tBehavior
-  repeat while tBehavior is not empty
-    if there is a tBehavior then
-      put cr & "   behavior:" && tBehavior && "[" & the long name of tBehavior & "]" after tTooltip
-      put the behavior of tBehavior into tBehavior
-    else
-      put cr & "   behavior:" && tBehavior && "[" & tBehavior && "(does not exist)]" after tTooltip
-      exit repeat
-    end if
-  end repeat
+  if rDataA["control exists"] then
+    put the behavior of rDataA["id"] into tBehavior
+    repeat while tBehavior is not empty
+      if there is a tBehavior then
+        put cr & "   behavior:" && tBehavior && "[" & the long name of tBehavior & "]" after tTooltip
+        put the behavior of tBehavior into tBehavior
+      else
+        put cr & "   behavior:" && tBehavior && "[" & tBehavior && "(does not exist)]" after tTooltip
+        exit repeat
+      end if
+    end repeat
+  end if
 
   put tTooltip into rDataA["tooltip"]
 
