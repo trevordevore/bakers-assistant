@@ -61,13 +61,28 @@ end _resizePreview
 private command PopulateUITypesMenu
   local tMenu
 
-  put "UI" & cr & "Templates" into tMenu
+  local tRegisteredComponents
+  put levureAppGet("registered components") into tRegisteredComponents
+  repeat for each key tKey in tRegisteredComponents["ui"]
+    if tKey is among the items of "ui,templates" then
+      next repeat
+    else
+      repeat with i = 1 to the number of words in tKey
+        put toUpper(codepoint 1 of word i of tKey) \
+          into codepoint 1 of word i of tKey
+      end repeat
+    end if
+    put tKey & cr after tMenu
+  end repeat
 
-  if levureAppHasProperty("embeddable views") then
-    put cr & "Embeddable Views" after tMenu
+  if tMenu is not empty then
+    sort lines of tMenu
+    put "-" & cr after tMenu
   end if
 
-  put cr & "Open Stacks" after tMenu
+  put "UI" & cr & "Templates" & cr & "-" & cr before tMenu
+
+  put "Open Stacks" after tMenu
 
   set the text of button "UIType" to tMenu
 end PopulateUITypesMenu
